@@ -2,6 +2,7 @@ import { useState } from "react";
 import reactLogo from "./assets/react.svg";
 import { invoke } from "@tauri-apps/api/tauri";
 import "./App.css";
+import { Button } from '@mantine/core';
 
 function App() {
   const [greetMsg, setGreetMsg] = useState("");
@@ -37,9 +38,9 @@ function App() {
             onChange={(e) => setName(e.currentTarget.value)}
             placeholder="Enter a name..."
           />
-          <button type="button" onClick={() => greet()}>
+          <Button type="button" onClick={() => greet()}>
             Greet
-          </button>
+          </Button>
         </div>
       </div>
       <p>{greetMsg}</p>
