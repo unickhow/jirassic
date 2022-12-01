@@ -3,6 +3,7 @@ import reactLogo from "./assets/react.svg";
 import { invoke } from "@tauri-apps/api/tauri";
 import "./App.css";
 import { Button } from '@mantine/core';
+import { Input } from '@mantine/core';
 
 function App() {
   const [greetMsg, setGreetMsg] = useState("");
@@ -31,17 +32,13 @@ function App() {
 
       <p>Click on the Tauri, Vite, and React logos to learn more.</p>
 
-      <div className="row">
-        <div>
-          <input
-            id="greet-input"
-            onChange={(e) => setName(e.currentTarget.value)}
-            placeholder="Enter a name..."
-          />
-          <Button type="button" onClick={() => greet()}>
-            Greet
-          </Button>
-        </div>
+      <div className="flex justify-center">
+        <Input
+          placeholder="Enter a name..."
+        />
+        <Button type="button" className="ml-4" onClick={() => greet()}>
+          Greet
+        </Button>
       </div>
       <p>{greetMsg}</p>
     </div>
