@@ -2,6 +2,7 @@ import { Title, ActionIcon, Button, Space } from '@mantine/core';
 import { IconSettings, IconEggCracked, IconEgg } from '@tabler/icons';
 import GitHubPanel from '../components/gitHubPanel';
 import ResultPanel from '../components/resultPanel';
+import SettingModal from '../components/settingModal';
 
 function App() {
   return (
@@ -10,7 +11,7 @@ function App() {
         <Title
           order={1}
           className="jirassic-gradient">Jirassic</Title>
-        <ActionIcon><IconSettings size={20} /></ActionIcon>
+        <SettingModal />
       </div>
 
       <GitHubPanel />
