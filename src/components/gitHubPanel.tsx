@@ -21,7 +21,6 @@ const GitHubPanel = () => {
       <div className="flex-wrap sm:flex-nowrap flex items-end mb-2">
         <Input.Wrapper label="Owner" className="w-full sm:w-[300px]">
           <Input
-            size="xs"
             autoFocus
             value={owner}
             onChange={(e) => setOwner(e.currentTarget.value)}
@@ -29,7 +28,7 @@ const GitHubPanel = () => {
             placeholder="Owner"
             rightSection={
               owner
-                ? (<ActionIcon radius="xl" size="xs" onClick={handleOwnerClear}>
+                ? (<ActionIcon radius="xl" onClick={handleOwnerClear}>
                     <IconX size={12} />
                   </ActionIcon>)
                 : null
@@ -39,13 +38,12 @@ const GitHubPanel = () => {
         <span className="mx-2 text-xl opacity-30 hidden sm:block">/</span>
         <Input.Wrapper label="Repository" className="w-full">
           <Input
-            size="xs"
             value={repository}
             onChange={(e) => setRepository(e.target.value)}
             placeholder="Repository"
             rightSection={
               repository
-                ? (<ActionIcon radius="xl" size="xs" onClick={handleRepositoryClear}>
+                ? (<ActionIcon radius="xl" onClick={handleRepositoryClear}>
                     <IconX size={12} />
                   </ActionIcon>)
                 : null
@@ -57,7 +55,6 @@ const GitHubPanel = () => {
       <div className="flex-wrap sm:flex-nowrap flex items-end">
         <Select
           label="base"
-          size="xs"
           className="w-full"
           value={base}
           onChange={(val) => setBase(val ?? '')}
@@ -70,12 +67,11 @@ const GitHubPanel = () => {
             { value: 'main', label: 'main' }
           ]}
         />
-        <ActionIcon variant="transparent">
+        <ActionIcon variant="transparent" className="mb-1">
           <IconArrowLeftCircle size={16} />
         </ActionIcon>
         <Select
           label="compare"
-          size="xs"
           className="w-full"
           value={compare}
           onChange={(val) => setCompare(val ?? '')}
