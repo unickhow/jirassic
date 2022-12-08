@@ -6,7 +6,7 @@
     "distDir": "../dist"
   },
   "package": {
-    "productName": "jirasic",
+    "productName": "jirassic",
     "version": "0.0.0"
   },
   "tauri": {
@@ -28,7 +28,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "com.unickhow.jirasic",
       "longDescription": "",
       "macOS": {
         "entitlements": null,

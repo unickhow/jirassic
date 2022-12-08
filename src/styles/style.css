@@ -6,8 +6,10 @@
 
   --color-white: #fafafa;
   --color-black: #2e4052;
-  --color-blue: #3184dd;
-  --color-blue-darker: #17508c;
+  --color-blue: #0052CC;
+  --color-blue-darker: #172B4D;
+  --color-yellow: #ffda33;
+  --color-orange: #ab3e02;
 
   color: var(--color-black);
   background-color: var(--color-white);
@@ -17,26 +19,6 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
-}
-
-.container {
-  @apply text-center max-w-[1280px] mx-auto;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: 0.75s;
-}
-
-.logo.tauri:hover {
-  filter: drop-shadow(0 0 2em #24c8db);
-}
-
-.row {
-  display: flex;
-  justify-content: center;
 }
 
 a {
@@ -58,4 +40,29 @@ a:hover {
   a:hover {
     color: #24c8db;
   }
+}
+
+html, body {
+  @apply h-full;
+}
+
+#root {
+  @apply h-full;
+}
+
+.jirassic-gradient {
+  background: -webkit-linear-gradient(45deg, var(--color-orange), var(--color-yellow));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@-webkit-keyframes AnimationName {
+  0%{background-position:0% 9%}
+  50%{background-position:100% 92%}
+  100%{background-position:0% 9%}
+}
+@keyframes AnimationName {
+  0%{background-position:0% 9%}
+  50%{background-position:100% 92%}
+  100%{background-position:0% 9%}
 }

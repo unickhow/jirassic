@@ -4,6 +4,7 @@ specifiers:
   '@emotion/react': ^11.10.5
   '@mantine/core': ^5.8.4
   '@mantine/hooks': ^5.8.4
+  '@tabler/icons': ^1.114.0
   '@tauri-apps/api': ^1.1.0
   '@tauri-apps/cli': ^1.1.0
   '@types/node': ^18.7.10
@@ -21,6 +22,7 @@ dependencies:
   '@emotion/react': 11.10.5_fan5qbzahqtxlm5dzefqlqx5ia
   '@mantine/core': 5.8.4_j2hnfxahg3fk7u7hfjctjo5wuu
   '@mantine/hooks': 5.8.4_react@18.2.0
+  '@tabler/icons': 1.114.0_biqbaboplfbrettd7655fr4n2y
   '@tauri-apps/api': 1.2.0
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
@@ -728,6 +730,21 @@ packages:
       estree-walker: 2.0.2
       picomatch: 2.3.1
     dev: true
+
+  /@tabler/icons/1.114.0_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-TI6l2YhGlpZGutaT/zrzTjLF0lsdB648QzM80Dhe22rL2lggvqOzcyWTw6ctmFTySgCwkmEnrUImOICjTlqoAA==}
+    peerDependencies:
+      react: ^16.x || 17.x || 18.x
+      react-dom: ^16.x || 17.x || 18.x
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+    dev: false
 
   /@tauri-apps/api/1.2.0:
     resolution: {integrity: sha512-lsI54KI6HGf7VImuf/T9pnoejfgkNoXveP14pVV7XarrQ46rOejIVJLFqHI9sRReJMGdh2YuCoI3cc/yCWCsrw==}
