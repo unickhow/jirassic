@@ -18,13 +18,13 @@ function App() {
 
       <div className="flex justify-center my-8">
         <Button
-          variant="gradient" gradient={{ from: '#ffda33', to: '#ab3e02', deg: 35 }}
-          leftIcon={<IconEggCracked size={16} />}>Generate</Button>
-        <Space w="sm" />
-        <Button
           variant="subtle"
           color="gray"
           leftIcon={<IconEgg size={16} />}>Reset</Button>
+        <Space w="sm" />
+        <Button
+          variant="gradient" gradient={{ from: '#ffda33', to: '#ab3e02', deg: 35 }}
+          leftIcon={<IconEggCracked size={16} />}>Generate</Button>
       </div>
 
       <ResultPanel />
