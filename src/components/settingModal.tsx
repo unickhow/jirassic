@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Modal, ActionIcon, Divider, PasswordInput, MultiSelect, Space, TextInput, Button } from '@mantine/core';
 import { IconSettings, IconKey, IconX, IconUserCircle, IconCheck } from '@tabler/icons';
 import MdiJira from '~icons/mdi/jira'
@@ -6,28 +6,35 @@ import MdiGithubFace from '~icons/mdi/githubFace'
 import MdiConnection from '~icons/mdi/connection'
 import OcticonRepo from '~icons/octicon/repo'
 import OcticonGitBranch16 from '~icons/octicon/git-branch-16'
+import { ISettingState } from '../interface'
+import lf from '../ls'
 
 const SettingModal = () => {
-  const [opened, setOpened] = useState(false);
-  const [githubToken, setGithubToken] = useState('');
+  const [opened, setOpened] = useState<boolean>(false);
+  const [formState, setFormState] = useState<ISettingState>({
+    githubToken: '',
+    repositories: [],
+    branches: [],
+    jiraDomain: '',
+    jiraAccount: '',
+    jiraToken: ''
+  })
 
-  const [repos, setRepos] = useState([
-    { value: 'react', label: 'React' },
-    { value: 'ng', label: 'Angular' },
-  ]);
-
-  const [branches, setBranches] = useState([
-    { value: 'master', label: 'master' },
-    { value: 'release', label: 'release' },
-    { value: 'dev', label: 'dev' },
-  ]);
-
-  const [jiraDomain, setJiraDomain] = useState('');
-  const [jiraAccount, setJiraAccount] = useState('');
-  const [jiraToken, setJiraToken] = useState('');
+  useEffect(() => {
+    async function initForm () {
+      lf.iterate((value, key) => {
+        setFormState(form => ({ ...form, [key]: value }))
+      }).catch((err) => {
+        console.error(err)
+      });
+    }
+    initForm()
+  }, [])
 
   const handleSave = () => {
-    console.log('🚀 ~ file: settingModal.tsx:30 ~ handleSave ~ handleSave')
+    Object.entries(formState).forEach(([key, value]) => {
+      lf.setItem(key, value)
+    })
     setOpened(false);
   }
 
@@ -54,8 +61,8 @@ const SettingModal = () => {
           } />
           <PasswordInput
             label="Token"
-            value={githubToken}
-            onChange={(e) => setGithubToken(e.currentTarget.value)}
+            value={formState.githubToken}
+            onChange={(e) => setFormState({ ...formState, githubToken: e.currentTarget.value })}
             description={
               <span>go <a href="/">generate</a></span>
             }
@@ -66,7 +73,8 @@ const SettingModal = () => {
           <Space h="sm" />
           <MultiSelect
             label="Repositories"
-            data={repos}
+            value={formState.repositories}
+            data={formState.repositories}
             searchable
             creatable
             icon={
@@ -74,15 +82,16 @@ const SettingModal = () => {
             }
             getCreateLabel={(query) => `+ Create ${query}`}
             onCreate={(query) => {
-              const item = { value: query, label: query };
-              setRepos((current) => [...current, item]);
-              return item;
+              setFormState({ ...formState, repositories: [...formState.repositories, query] })
+              return query;
             }}
+            onChange={val => setFormState({ ...formState, repositories: val })}
           />
           <Space h="sm" />
           <MultiSelect
             label="Branches"
-            data={branches}
+            value={formState.branches}
+            data={formState.branches}
             searchable
             creatable
             icon={
@@ -90,10 +99,10 @@ const SettingModal = () => {
             }
             getCreateLabel={(query) => `+ Create ${query}`}
             onCreate={(query) => {
-              const item = { value: query, label: query };
-              setBranches((current) => [...current, item]);
-              return item;
+              setFormState({ ...formState, branches: [...formState.branches, query] })
+              return query;
             }}
+            onChange={val => setFormState({ ...formState, branches: val })}
           />
         </div>
         <div className="jira-block p-2">
@@ -108,11 +117,11 @@ const SettingModal = () => {
             icon={
               <MdiConnection />
             }
-            value={jiraDomain}
-            onChange={(e) => setJiraDomain(e.currentTarget.value)}
+            value={formState.jiraDomain}
+            onChange={(e) => setFormState({ ...formState, jiraDomain: e.currentTarget.value })}
             rightSection={
-              jiraDomain
-                ? (<ActionIcon radius="xl" onClick={() => setJiraDomain('')}>
+              formState.jiraDomain
+                ? (<ActionIcon radius="xl" onClick={() => setFormState({ ...formState, jiraDomain: '' })}>
                     <IconX size={12} />
                   </ActionIcon>)
                 : null
@@ -124,11 +133,11 @@ const SettingModal = () => {
             icon={
               <IconUserCircle />
             }
-            value={jiraAccount}
-            onChange={(e) => setJiraAccount(e.currentTarget.value)}
+            value={formState.jiraAccount}
+            onChange={(e) => setFormState({ ...formState, jiraAccount: e.currentTarget.value })}
             rightSection={
-              jiraAccount
-                ? (<ActionIcon radius="xl" onClick={() => setJiraAccount('')}>
+              formState.jiraAccount
+                ? (<ActionIcon radius="xl" onClick={() => setFormState({ ...formState, jiraAccount: '' })}>
                     <IconX size={12} />
                   </ActionIcon>)
                 : null
@@ -137,8 +146,8 @@ const SettingModal = () => {
           <Space h="sm" />
           <PasswordInput
             label="Token"
-            value={jiraToken}
-            onChange={(e) => setJiraToken(e.currentTarget.value)}
+            value={formState.jiraToken}
+            onChange={(e) => setFormState({ ...formState, jiraToken: e.currentTarget.value })}
             description={
               <span>go <a href="/">generate</a></span>
             }
