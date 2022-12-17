@@ -4,8 +4,11 @@ import GitHubPanel from '../components/gitHubPanel';
 import ResultPanel from '../components/resultPanel';
 import SettingModal from '../components/settingModal';
 import { useState, useEffect } from 'react';
-import { ISettingState, IFormState } from '../interface'
+import { ISettingState, IFormState, IResultState, IJiraCommit } from '../declare/interface'
+import { Pattern } from '../declare/enum'
 import lf from '../lf';
+import { fetch } from '@tauri-apps/api/http';
+import { encode } from 'js-base64'
 
 function App() {
   // setting modal data
@@ -17,6 +20,13 @@ function App() {
     jiraDomain: '',
     jiraAccount: '',
     jiraToken: ''
+  })
+
+  const [resultState, setResultState] = useState<IResultState>({
+    title: '',
+    content: '',
+    isLoading: true,
+    isParentDisplay: true
   })
 
   useEffect(() => {
@@ -39,8 +49,65 @@ function App() {
     compare: ''
   })
 
-  const handleGenerate = () => {
-    console.log('🚀 ~ file: App.tsx:44 ~ handleGenerate ~ formState', formState)
+  const fetchPullRequestCommits = async () => {
+    const { owner, repository, base, compare } = formState
+    return fetch(`https://api.github.com/repos/${owner}/${repository}/compare/${base}...${compare}`, {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${settingState.githubToken}` }
+    }).then((res: any) => {
+      return Promise.resolve(res.data.commits)
+    })
+  }
+
+  const fetchJiraIssuesByCommits = async (commits: IJiraCommit[]) => {
+    const { jiraDomain, jiraAccount, jiraToken } = settingState
+    const commitMessages = commits.map((commit) => commit.commit.message)
+    const jiraIssueKeys = commitMessages
+      .filter((message) => message.match(Pattern.JiraIssuePatternInCommit))
+      .map((message) => message.match(Pattern.JiraIssuePattern)?.[0])
+
+    return Promise.all(jiraIssueKeys.map((issueKey) => {
+      const token = `${jiraAccount}:${jiraToken}`
+      const domain = /^https:\/\//.test(jiraDomain) ? jiraDomain : `https://${jiraDomain}`
+      return fetch(`${domain}rest/api/3/issue/${issueKey}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Basic ${(encode(token))}`
+        }
+      }).then((res: any) => {
+        const { fields: { summary: subject, issuetype, parent } } = res.data
+        const data = {
+          id: issueKey,
+          subject,
+          title: `- ${subject} [${issueKey}](${jiraDomain}/browse/${issueKey})`,
+          isSubTask: issuetype.subtask,
+          parent: issuetype.subtask
+            ? {
+              id: parent.key,
+              subject: parent.fields.summary,
+              title: `  - Parent: ${parent.fields.summary} [${parent.key}](${jiraDomain}/browse/${parent.key})`
+            }
+            : null
+        }
+        return Promise.resolve(data)
+      })
+    }))
+  }
+  const handleGenerate = async () => {
+    setResultState((state) => ({ ...state, isLoading: true }))
+    const commits = await fetchPullRequestCommits()
+    const result = await fetchJiraIssuesByCommits(commits)
+
+    setResultState((state) => ({
+      ...state,
+      isLoading: false,
+      title: `Merge ${formState.compare} into ${formState.base} (${result.map((item) => item.id).join(', ')})`,
+      content: result.map((item) => {
+        return state.isParentDisplay && item.parent
+          ? item.title.concat(`\r\n${item.parent.title}`)
+          : item.title
+      }).join('\r\n')
+    }))
   }
   //
 
@@ -74,7 +141,7 @@ function App() {
           onClick={handleGenerate}>Generate</Button>
       </div>
 
-      <ResultPanel />
+      <ResultPanel resultState={resultState} />
     </main>
   );
 }

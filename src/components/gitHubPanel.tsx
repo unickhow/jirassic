@@ -1,6 +1,6 @@
 import { Paper, Input, ActionIcon, Select } from '@mantine/core';
 import { IconBrandGithub, IconX, IconGitBranch, IconArrowLeftCircle } from '@tabler/icons';
-import { ISettingState, IFormState } from '../interface'
+import { ISettingState, IFormState } from '../declare/interface'
 
 const GitHubPanel = ({settingState, formState, setFormState}: {
   settingState: ISettingState,

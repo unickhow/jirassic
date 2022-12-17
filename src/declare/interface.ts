@@ -13,3 +13,17 @@ export interface IFormState {
   base: string,
   compare: string
 }
+
+export interface IResultState {
+  title: string,
+  content: string,
+  isParentDisplay: boolean,
+  isLoading: boolean
+}
+
+export interface IJiraCommit {
+  id: string,
+  commit: {
+    message: string
+  }
+}

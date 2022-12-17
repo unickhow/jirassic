@@ -1,11 +1,10 @@
 import { Paper, Input, CopyButton, ActionIcon, Textarea, Space } from '@mantine/core';
 import { IconCopy, IconCheck } from '@tabler/icons';
+import { IResultState } from '../declare/interface'
 
-const ResultPanel = () => {
-  const mockContent = `- [OWLPAY-13845] Add new feature
-- [OWLPAY-13846] Add new feature
-- [OWLPAY-13847] Add new feature`
-
+const ResultPanel = ({ resultState }: {
+  resultState: IResultState
+}) => {
   return (
     <Paper shadow="sm" p="md">
       <Input
@@ -23,13 +22,13 @@ const ResultPanel = () => {
             )}
           </CopyButton>
         }>
-        [OWLPAY-13845] Add new feature
+        {resultState.title}
       </Input>
       <Space h="sm" />
       <Textarea
         autosize
         minRows={5}
-        value={mockContent}
+        value={resultState.content}
         rightSection={
           <CopyButton value="https://mantine.dev" timeout={2000}>
             {({ copied, copy }) => (
