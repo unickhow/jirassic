@@ -3,9 +3,9 @@ import { IconEggCracked, IconEgg } from '@tabler/icons';
 import GitHubPanel from '../components/gitHubPanel';
 import ResultPanel from '../components/resultPanel';
 import SettingModal from '../components/settingModal';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { ISettingState, IFormState, IResultState, IJiraCommit } from '../declare/interface'
-import { Pattern } from '../declare/enum'
+import { JiraIssuePatternInCommit, JiraIssuePattern } from '../declare/enum'
 import lf from '../lf';
 import { fetch } from '@tauri-apps/api/http';
 import { encode } from 'js-base64'
@@ -25,8 +25,8 @@ function App() {
   const [resultState, setResultState] = useState<IResultState>({
     title: '',
     content: '',
-    isLoading: true,
-    isParentDisplay: true
+    isLoading: false,
+    isParentDisplay: false
   })
 
   useEffect(() => {
@@ -63,8 +63,8 @@ function App() {
     const { jiraDomain, jiraAccount, jiraToken } = settingState
     const commitMessages = commits.map((commit) => commit.commit.message)
     const jiraIssueKeys = commitMessages
-      .filter((message) => message.match(Pattern.JiraIssuePatternInCommit))
-      .map((message) => message.match(Pattern.JiraIssuePattern)?.[0])
+      .filter((message) => message.match(JiraIssuePatternInCommit))
+      .map((message) => message.match(JiraIssuePattern)?.[0])
 
     return Promise.all(jiraIssueKeys.map((issueKey) => {
       const token = `${jiraAccount}:${jiraToken}`
@@ -93,6 +93,12 @@ function App() {
       })
     }))
   }
+  //
+
+  const isGenerateAvailable = useMemo(() => {
+    const { owner, repository, base, compare } = formState
+    return owner && repository && base && compare
+  }, [formState])
   const handleGenerate = async () => {
     setResultState((state) => ({ ...state, isLoading: true }))
     const commits = await fetchPullRequestCommits()
@@ -109,7 +115,24 @@ function App() {
       }).join('\r\n')
     }))
   }
-  //
+
+  const isResetAvailable = useMemo(() => {
+    return resultState.title || resultState.content
+  }, [resultState])
+  const handleReset = () => {
+    setFormState({
+      owner: '',
+      repository: '',
+      base: '',
+      compare: ''
+    })
+    setResultState({
+      title: '',
+      content: '',
+      isLoading: false,
+      isParentDisplay: false
+    })
+  }
 
   return (
     <main className="container max-w-[760px] mx-auto">
@@ -133,11 +156,14 @@ function App() {
         <Button
           variant="subtle"
           color="gray"
-          leftIcon={<IconEgg size={16} />}>Reset</Button>
+          leftIcon={<IconEgg size={16} />}
+          disabled={!isResetAvailable}
+          onClick={handleReset}>Reset</Button>
         <Space w="sm" />
         <Button
           variant="gradient" gradient={{ from: '#ffda33', to: '#ab3e02', deg: 35 }}
           leftIcon={<IconEggCracked size={16} />}
+          disabled={!isGenerateAvailable}
           onClick={handleGenerate}>Generate</Button>
       </div>
 

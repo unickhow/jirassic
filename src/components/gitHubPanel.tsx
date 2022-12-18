@@ -20,7 +20,10 @@ const GitHubPanel = ({settingState, formState, setFormState}: {
             placeholder="Owner"
             rightSection={
               formState.owner
-                ? (<ActionIcon radius="xl" onClick={() => setFormState((form: IFormState) => ({ ...form, owner: '' }))}>
+                ? (<ActionIcon
+                    radius="xl"
+                    tabIndex={-1}
+                    onClick={() => setFormState((form: IFormState) => ({ ...form, owner: '' }))}>
                     <IconX size={12} />
                   </ActionIcon>)
                 : null
@@ -51,7 +54,7 @@ const GitHubPanel = ({settingState, formState, setFormState}: {
           icon={<IconGitBranch size={16} />}
           data={settingState.branches}
         />
-        <ActionIcon variant="transparent" className="mb-1">
+        <ActionIcon variant="transparent" className="mb-1" tabIndex={-1}>
           <IconArrowLeftCircle size={16} />
         </ActionIcon>
         <Select
