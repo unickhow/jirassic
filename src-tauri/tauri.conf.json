@@ -7,7 +7,7 @@
   },
   "package": {
     "productName": "jirassic",
-    "version": "0.0.0"
+    "version": "1.0.0"
   },
   "tauri": {
     "allowlist": {
@@ -61,7 +61,7 @@
         "fullscreen": false,
         "height": 600,
         "resizable": true,
-        "title": "jirasic",
+        "title": "Jirasic",
         "width": 800
       }
     ]
