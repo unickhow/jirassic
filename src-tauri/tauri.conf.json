@@ -32,7 +32,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.unickhow.jirasic",
+      "identifier": "com.unickhow.jirassic",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
@@ -61,7 +61,7 @@
         "fullscreen": false,
         "height": 600,
         "resizable": true,
-        "title": "Jirasic",
+        "title": "Jirassic",
         "width": 800
       }
     ]
