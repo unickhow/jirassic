@@ -15,7 +15,7 @@ const GitHubPanel = ({settingState, formState, setFormState}: {
           <Input
             autoFocus
             value={formState.owner}
-            onChange={(evt) => setFormState((form: IFormState) => ({ ...form, owner: evt.target.value }))}
+            onChange={(evt) => setFormState({ ...formState, owner: evt.target.value })}
             icon={<IconBrandGithub size={16} />}
             placeholder="Owner"
             rightSection={
@@ -23,7 +23,7 @@ const GitHubPanel = ({settingState, formState, setFormState}: {
                 ? (<ActionIcon
                     radius="xl"
                     tabIndex={-1}
-                    onClick={() => setFormState((form: IFormState) => ({ ...form, owner: '' }))}>
+                    onClick={() => setFormState({ ...formState, owner: '' })}>
                     <IconX size={12} />
                   </ActionIcon>)
                 : null
@@ -35,7 +35,7 @@ const GitHubPanel = ({settingState, formState, setFormState}: {
           label="Repository"
           className="w-full"
           value={formState.repository}
-          onChange={(val) => setFormState((form: IFormState) => ({ ...form, repository: val ?? '' }))}
+          onChange={(val) => setFormState({ ...formState, repository: val ?? '' })}
           searchable
           clearable
           icon={<IconGitBranch size={16} />}
@@ -48,7 +48,7 @@ const GitHubPanel = ({settingState, formState, setFormState}: {
           label="base"
           className="w-full"
           value={formState.base}
-          onChange={(val) => setFormState((form: IFormState) => ({ ...form, base: val ?? '' }))}
+          onChange={(val) => setFormState({ ...formState, base: val ?? '' })}
           searchable
           clearable
           icon={<IconGitBranch size={16} />}
@@ -61,7 +61,7 @@ const GitHubPanel = ({settingState, formState, setFormState}: {
           label="compare"
           className="w-full"
           value={formState.compare}
-          onChange={(val) => setFormState((form: IFormState) => ({ ...form, compare: val ?? '' }))}
+          onChange={(val) => setFormState({ ...formState, compare: val ?? '' })}
           searchable
           clearable
           icon={<IconGitBranch size={16} />}

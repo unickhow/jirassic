@@ -19,7 +19,7 @@ const SettingModal = ({ opened, setOpened, settingState, setSettingState }: {
   useEffect(() => {
     async function initForm () {
       lf.iterate((value, key) => {
-        setSettingState((form) => ({ ...form, [key]: value }))
+        setSettingState({ ...settingState, [key]: value })
       }).catch((err) => {
         console.error(err)
       });
