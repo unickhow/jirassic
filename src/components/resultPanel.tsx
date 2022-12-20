@@ -1,10 +1,12 @@
-import { Paper, Input, CopyButton, ActionIcon, Textarea, Space, LoadingOverlay } from '@mantine/core';
+import { Paper, Input, CopyButton, ActionIcon, Textarea, LoadingOverlay, Checkbox } from '@mantine/core';
 import { IconCopy, IconCheck } from '@tabler/icons';
 import { IResultState } from '../declare/interface';
 import { writeText } from '@tauri-apps/api/clipboard';
 
-const ResultPanel = ({ resultState }: {
-  resultState: IResultState
+const ResultPanel = ({ resultState, isParentDisplay, setIsParentDisplay }: {
+  resultState: IResultState,
+  isParentDisplay: boolean,
+  setIsParentDisplay: (isParentDisplay: boolean) => void
 }) => {
   return (
     <>
@@ -28,7 +30,11 @@ const ResultPanel = ({ resultState }: {
           }>
           {resultState.title}
         </Input>
-        <Space h="sm" />
+        <Checkbox
+          label="Show parent issue for sub-task"
+          className="mt-2"
+          checked={isParentDisplay}
+          onChange={(e) => setIsParentDisplay(e.currentTarget.checked)} />
         <Textarea
           autosize
           minRows={5}

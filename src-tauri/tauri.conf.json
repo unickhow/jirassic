@@ -6,8 +6,8 @@
     "distDir": "../dist"
   },
   "package": {
-    "productName": "jirassic",
-    "version": "1.0.1"
+    "productName": "Jirassic",
+    "version": "1.1.1"
   },
   "tauri": {
     "allowlist": {
