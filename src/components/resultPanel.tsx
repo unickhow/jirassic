@@ -1,6 +1,7 @@
 import { Paper, Input, CopyButton, ActionIcon, Textarea, Space, LoadingOverlay } from '@mantine/core';
 import { IconCopy, IconCheck } from '@tabler/icons';
 import { IResultState } from '../declare/interface';
+import { writeText } from '@tauri-apps/api/clipboard';
 
 const ResultPanel = ({ resultState }: {
   resultState: IResultState
@@ -19,7 +20,7 @@ const ResultPanel = ({ resultState }: {
                   color={copied ? 'orange' : 'gray'}
                   radius="xl"
                   variant="transparent"
-                  onClick={copy}>
+                  onClick={() => writeText(resultState.title)}>
                   {copied ? <IconCheck size={16} /> : <IconCopy size={16} />}
                 </ActionIcon>
               )}
@@ -39,7 +40,7 @@ const ResultPanel = ({ resultState }: {
                   color={copied ? 'orange' : 'gray'}
                   radius="xl"
                   variant="transparent"
-                  onClick={copy}>
+                  onClick={() => writeText(resultState.content)}>
                   {copied ? <IconCheck size={16} /> : <IconCopy size={16} />}
                 </ActionIcon>
               )}

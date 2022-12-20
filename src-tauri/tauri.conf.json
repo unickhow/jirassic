@@ -7,7 +7,7 @@
   },
   "package": {
     "productName": "jirassic",
-    "version": "1.0.0"
+    "version": "1.0.1"
   },
   "tauri": {
     "allowlist": {
@@ -15,6 +15,11 @@
         "all": true,
         "request": true,
         "scope": ["https://**"]
+      },
+      "clipboard": {
+        "all": true,
+        "writeText": true,
+        "readText": true
       }
     },
     "bundle": {
