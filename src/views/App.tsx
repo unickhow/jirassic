@@ -4,7 +4,7 @@ import GitHubPanel from '../components/gitHubPanel';
 import ResultPanel from '../components/resultPanel';
 import SettingModal from '../components/settingModal';
 import { useState, useEffect, useMemo } from 'react';
-import { ISettingState, IFormState, IResultState, IJiraCommit } from '../declare/interface'
+import { ISettingState, IFormState, IResultState, IGitHubCommit, IJiraIssueResponse, IMatchedResult } from '../declare/interface'
 import { JiraIssuePatternInCommit, JiraIssuePattern } from '../declare/enum'
 import lf from '../lf';
 import { fetch } from '@tauri-apps/api/http';
@@ -25,9 +25,9 @@ function App() {
   const [resultState, setResultState] = useState<IResultState>({
     title: '',
     content: '',
-    isLoading: false,
-    isParentDisplay: false
+    isLoading: false
   })
+  const [isParentDisplay, setIsParentDisplay] = useState<boolean>(false)
 
   useEffect(() => {
     async function initForm () {
@@ -59,37 +59,41 @@ function App() {
     })
   }
 
-  const fetchJiraIssuesByCommits = async (commits: IJiraCommit[]) => {
+  const [matchedResults, setMatchedResults] = useState<IMatchedResult[]>([])
+  const fetchJiraIssuesByCommits = async (commits: IGitHubCommit[]) => {
+    setMatchedResults([])
     const { jiraDomain, jiraAccount, jiraToken } = settingState
-    const commitMessages = commits.map((commit) => commit.commit.message)
-    const jiraIssueKeys = commitMessages
+    const commitMessages: string[] = commits.map((commit) => commit.commit.message)
+    const jiraIssueKeys: string[] = commitMessages
       .filter((message) => message.match(JiraIssuePatternInCommit))
-      .map((message) => message.match(JiraIssuePattern)?.[0])
+      .map((message) => message.match(JiraIssuePattern)?.[0] || '')
+      .filter(Boolean)
 
     return Promise.all(jiraIssueKeys.map((issueKey) => {
       const token = `${jiraAccount}:${jiraToken}`
       const domain = /^https:\/\//.test(jiraDomain) ? jiraDomain : `https://${jiraDomain}`
-      return fetch(`${domain}rest/api/3/issue/${issueKey}`, {
+      const url = domain.endsWith('/') ? domain : `${domain}/`
+      return fetch(`${url}rest/api/3/issue/${issueKey}`, {
         method: 'GET',
         headers: {
           'Authorization': `Basic ${(encode(token))}`
         }
       }).then((res: any) => {
-        const { fields: { summary: subject, issuetype, parent } } = res.data
-        const data = {
+        const { fields: { summary, issuetype, parent } } = res.data as IJiraIssueResponse
+        const result: IMatchedResult = {
           id: issueKey,
-          subject,
-          title: `- ${subject} [${issueKey}](${jiraDomain}/browse/${issueKey})`,
+          title: `- ${summary} [${issueKey}](${url}browse/${issueKey})`,
           isSubTask: issuetype.subtask,
-          parent: issuetype.subtask
+          parent: issuetype.subtask && parent
             ? {
               id: parent.key,
               subject: parent.fields.summary,
-              title: `  - Parent: ${parent.fields.summary} [${parent.key}](${jiraDomain}/browse/${parent.key})`
+              title: `  - Parent: ${parent.fields.summary} [${parent.key}](${url}browse/${parent.key})`
             }
             : null
         }
-        return Promise.resolve(data)
+        setMatchedResults((state) => [...state, result])
+        return Promise.resolve(result)
       })
     }))
   }
@@ -99,6 +103,19 @@ function App() {
     const { owner, repository, base, compare } = formState
     return owner && repository && base && compare
   }, [formState])
+  useEffect(() => {
+    let result = ''
+    if (isParentDisplay) {
+      result = matchedResults.map((item) => {
+        return item.parent
+          ? item.title.concat(`\r\n${item.parent.title}`)
+          : item.title
+      }).join('\r\n')
+    } else {
+      result = matchedResults.map((item) => item.title).join('\r\n')
+    }
+    setResultState((state) => ({ ...state, content: result }))
+  }, [isParentDisplay])
   const handleGenerate = async () => {
     setResultState((state) => ({ ...state, isLoading: true }))
     const commits = await fetchPullRequestCommits()
@@ -109,7 +126,7 @@ function App() {
       isLoading: false,
       title: `Merge ${formState.compare} into ${formState.base} (${result.map((item) => item.id).join(', ')})`,
       content: result.map((item) => {
-        return state.isParentDisplay && item.parent
+        return isParentDisplay && item.parent
           ? item.title.concat(`\r\n${item.parent.title}`)
           : item.title
       }).join('\r\n')
@@ -129,9 +146,9 @@ function App() {
     setResultState({
       title: '',
       content: '',
-      isLoading: false,
-      isParentDisplay: false
+      isLoading: false
     })
+    setIsParentDisplay(false)
   }
 
   return (
@@ -167,7 +184,12 @@ function App() {
           onClick={handleGenerate}>Generate</Button>
       </div>
 
-      <ResultPanel resultState={resultState} />
+      <ResultPanel
+        {...{
+          resultState,
+          isParentDisplay,
+          setIsParentDisplay
+        }} />
     </main>
   );
 }
