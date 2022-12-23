@@ -8,6 +8,7 @@ import OcticonRepo from '~icons/octicon/repo'
 import OcticonGitBranch16 from '~icons/octicon/git-branch-16'
 import { ISettingState } from '../declare/interface'
 import lf from '../lf'
+import { open as OpenLink } from '@tauri-apps/api/shell'
 
 const SettingModal = ({ opened, setOpened, settingState, setSettingState }: {
   opened: boolean,
@@ -60,7 +61,7 @@ const SettingModal = ({ opened, setOpened, settingState, setSettingState }: {
             value={settingState.githubToken}
             onChange={(e) => setSettingState({ ...settingState, githubToken: e.currentTarget.value })}
             description={
-              <span>go <a href="https://github.com/settings/tokens">generate</a></span>
+              <span>go <a className="cursor-pointer" onClick={() => OpenLink('https://github.com/settings/tokens')}>generate</a></span>
             }
             icon={
               <IconKey size={20} />
@@ -145,7 +146,7 @@ const SettingModal = ({ opened, setOpened, settingState, setSettingState }: {
             value={settingState.jiraToken}
             onChange={(e) => setSettingState({ ...settingState, jiraToken: e.currentTarget.value })}
             description={
-              <span>go <a href="https://id.atlassian.com/manage-profile/security/api-tokens">generate</a></span>
+              <span>go <a className="cursor-pointer" onClick={() => OpenLink('https://id.atlassian.com/manage-profile/security/api-tokens')}>generate</a></span>
             }
             icon={
               <IconKey size={20} />
