@@ -18,6 +18,15 @@ const GitHubPanel = ({settingState, formState, setFormState}: {
       console.error(err)
     })
   }, [])
+
+  const swapBranch = () => {
+    setFormState({
+      ...formState,
+      base: formState.compare,
+      compare: formState.base
+    })
+  }
+
   return (
     <Paper shadow="sm" p="md">
       <div className="flex-wrap sm:flex-nowrap flex items-end mb-2">
@@ -56,7 +65,7 @@ const GitHubPanel = ({settingState, formState, setFormState}: {
 
       <div className="flex-wrap sm:flex-nowrap flex items-end">
         <Select
-          label="base"
+          label="Base"
           className="w-full"
           value={formState.base}
           onChange={(val) => setFormState({ ...formState, base: val ?? '' })}
@@ -65,11 +74,14 @@ const GitHubPanel = ({settingState, formState, setFormState}: {
           icon={<IconGitBranch size={16} />}
           data={settingState.branches}
         />
-        <ActionIcon variant="transparent" className="mb-1" tabIndex={-1}>
+        <ActionIcon
+          variant="transparent"
+          className="mb-1"
+          onClick={swapBranch}>
           <IconArrowLeftCircle size={16} />
         </ActionIcon>
         <Select
-          label="compare"
+          label="Compare"
           className="w-full"
           value={formState.compare}
           onChange={(val) => setFormState({ ...formState, compare: val ?? '' })}
