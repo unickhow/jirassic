@@ -1,13 +1,23 @@
 import { Paper, Input, ActionIcon, Select } from '@mantine/core';
 import { IconBrandGithub, IconX, IconGitBranch, IconArrowLeftCircle } from '@tabler/icons';
 import { ISettingState, IFormState } from '../declare/interface'
+import lf from '../lf'
+import { useEffect } from 'react';
 
 const GitHubPanel = ({settingState, formState, setFormState}: {
   settingState: ISettingState,
   formState: IFormState,
   setFormState: (formState: IFormState) => void
 }) => {
-
+  useEffect(() => {
+    lf.getItem('owner').then((value) => {
+      if (value && typeof value === 'string') {
+        setFormState({ ...formState, owner: value })
+      }
+    }).catch((err) => {
+      console.error(err)
+    })
+  }, [])
   return (
     <Paper shadow="sm" p="md">
       <div className="flex-wrap sm:flex-nowrap flex items-end mb-2">
@@ -16,6 +26,7 @@ const GitHubPanel = ({settingState, formState, setFormState}: {
             autoFocus
             value={formState.owner}
             onChange={(evt) => setFormState({ ...formState, owner: evt.target.value })}
+            onBlur={() => lf.setItem('owner', formState.owner)}
             icon={<IconBrandGithub size={16} />}
             placeholder="Owner"
             rightSection={
