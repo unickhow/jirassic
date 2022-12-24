@@ -82,13 +82,13 @@ function App() {
         const { fields: { summary, issuetype, parent } } = res.data as IJiraIssueResponse
         const result: IMatchedResult = {
           id: issueKey,
-          title: `- ${summary} [${issueKey}](${url}browse/${issueKey})`,
+          title: `- ${summary} [(${issueKey})](${url}browse/${issueKey})`,
           isSubTask: issuetype.subtask,
           parent: issuetype.subtask && parent
             ? {
               id: parent.key,
               subject: parent.fields.summary,
-              title: `  - Parent: ${parent.fields.summary} [${parent.key}](${url}browse/${parent.key})`
+              title: `  - Parent: ${parent.fields.summary} [(${parent.key})](${url}browse/${parent.key})`
             }
             : null
         }

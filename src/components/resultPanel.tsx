@@ -1,7 +1,8 @@
-import { Paper, Input, CopyButton, ActionIcon, Textarea, LoadingOverlay, Checkbox } from '@mantine/core';
-import { IconCopy, IconCheck } from '@tabler/icons';
-import { IResultState } from '../declare/interface';
-import { writeText } from '@tauri-apps/api/clipboard';
+import { Paper, Input, CopyButton, ActionIcon, Textarea, LoadingOverlay, Checkbox } from '@mantine/core'
+import { IconCopy, IconCheck } from '@tabler/icons'
+import { IResultState } from '../declare/interface'
+import { writeText } from '@tauri-apps/api/clipboard'
+import { markedPreview } from '../utils/marked'
 
 const ResultPanel = ({ resultState, isParentDisplay, setIsParentDisplay }: {
   resultState: IResultState,
@@ -16,7 +17,7 @@ const ResultPanel = ({ resultState, isParentDisplay, setIsParentDisplay }: {
         <Input
           component="span"
           rightSection={
-            <CopyButton value="https://mantine.dev" timeout={2000}>
+            <CopyButton value={""} timeout={2000}>
               {({ copied, copy }) => (
                 <ActionIcon
                   color={copied ? 'orange' : 'gray'}
@@ -35,23 +36,22 @@ const ResultPanel = ({ resultState, isParentDisplay, setIsParentDisplay }: {
           className="mt-2"
           checked={isParentDisplay}
           onChange={(e) => setIsParentDisplay(e.currentTarget.checked)} />
-        <Textarea
-          autosize
-          minRows={5}
-          value={resultState.content}
-          rightSection={
-            <CopyButton value="https://mantine.dev" timeout={2000}>
-              {({ copied, copy }) => (
-                <ActionIcon
-                  color={copied ? 'orange' : 'gray'}
-                  radius="xl"
-                  variant="transparent"
-                  onClick={() => writeText(resultState.content)}>
-                  {copied ? <IconCheck size={16} /> : <IconCopy size={16} />}
-                </ActionIcon>
-              )}
-            </CopyButton>
-          } />
+        <div className="mt-2 border border-gray-300 rounded text-sm flex p-1">
+          <div
+            className="mr-auto markdown-preview"
+            dangerouslySetInnerHTML={{ __html: markedPreview(resultState.content) }} />
+          <CopyButton value={""} timeout={2000}>
+            {({ copied, copy }) => (
+              <ActionIcon
+                color={copied ? 'orange' : 'gray'}
+                radius="xl"
+                variant="transparent"
+                onClick={() => writeText(resultState.content)}>
+                {copied ? <IconCheck size={16} /> : <IconCopy size={16} />}
+              </ActionIcon>
+            )}
+          </CopyButton>
+        </div>
       </Paper>
     </>
   );
