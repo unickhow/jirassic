@@ -1,8 +1,9 @@
-import { Paper, Input, CopyButton, ActionIcon, Textarea, LoadingOverlay, Checkbox } from '@mantine/core'
+import { Paper, Input, CopyButton, ActionIcon, LoadingOverlay, Checkbox } from '@mantine/core'
 import { IconCopy, IconCheck } from '@tabler/icons'
 import { IResultState } from '../declare/interface'
 import { writeText } from '@tauri-apps/api/clipboard'
 import { markedPreview } from '../utils/marked'
+import { ReactComponent as Loader } from '../assets/loading-dna.svg'
 
 const ResultPanel = ({ resultState, isParentDisplay, setIsParentDisplay }: {
   resultState: IResultState,
@@ -11,8 +12,10 @@ const ResultPanel = ({ resultState, isParentDisplay, setIsParentDisplay }: {
 }) => {
   return (
     <>
-      <LoadingOverlay visible={resultState.isLoading} overlayBlur={2} />
-
+      <LoadingOverlay
+        loader={<Loader />}
+        visible={resultState.isLoading}
+        overlayBlur={2} />
       <Paper shadow="sm" p="md">
         <Input
           component="span"
