@@ -43,7 +43,7 @@ a:hover {
 }
 
 html, body {
-  @apply h-full;
+  @apply h-full box-border m-0 p-2;
 }
 
 #root {

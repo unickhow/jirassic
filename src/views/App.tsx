@@ -4,11 +4,11 @@ import GitHubPanel from '../components/gitHubPanel';
 import ResultPanel from '../components/resultPanel';
 import SettingModal from '../components/settingModal';
 import { useState, useEffect, useMemo } from 'react';
-import { ISettingState, IFormState, IResultState, IGitHubCommit, IJiraIssueResponse, IMatchedResult } from '../declare/interface'
-import { JiraIssuePatternInCommit, JiraIssuePattern } from '../declare/enum'
+import { ISettingState, IFormState, IResultState, IGitHubCommit, IJiraIssueResponse, IMatchedResult } from '../declare/interface';
+import { JiraIssuePatternInCommit, JiraIssuePattern } from '../declare/enum';
 import lf from '../lf';
 import { fetch } from '@tauri-apps/api/http';
-import { encode } from 'js-base64'
+import { encode } from 'js-base64';
 
 function App() {
   // setting modal data
