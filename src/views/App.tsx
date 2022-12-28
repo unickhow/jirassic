@@ -64,10 +64,10 @@ function App() {
     setMatchedResults([])
     const { jiraDomain, jiraAccount, jiraToken } = settingState
     const commitMessages: string[] = commits.map((commit) => commit.commit.message)
-    const jiraIssueKeys: string[] = commitMessages
+    const jiraIssueKeys: string[] = [...new Set(commitMessages
       .filter((message) => message.match(JiraIssuePatternInCommit))
       .map((message) => message.match(JiraIssuePattern)?.[0] || '')
-      .filter(Boolean)
+      .filter(Boolean))]
 
     return Promise.all(jiraIssueKeys.map((issueKey) => {
       const token = `${jiraAccount}:${jiraToken}`
