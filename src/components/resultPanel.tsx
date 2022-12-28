@@ -18,7 +18,8 @@ const ResultPanel = ({ resultState, isParentDisplay, setIsParentDisplay }: {
         overlayBlur={2} />
       <Paper shadow="sm" p="md">
         <Input
-          component="span"
+          value={resultState.title}
+          readOnly
           rightSection={
             <CopyButton value={""} timeout={2000}>
               {({ copied, copy }) => (
@@ -31,9 +32,7 @@ const ResultPanel = ({ resultState, isParentDisplay, setIsParentDisplay }: {
                 </ActionIcon>
               )}
             </CopyButton>
-          }>
-          {resultState.title}
-        </Input>
+          }/>
         <Checkbox
           label="Show parent issue for sub-task"
           className="mt-2"
