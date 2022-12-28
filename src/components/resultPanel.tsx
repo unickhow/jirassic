@@ -13,6 +13,9 @@ const ResultPanel = ({ resultState, isParentDisplay, setIsParentDisplay }: {
   return (
     <>
       <LoadingOverlay
+        sx={{
+          position: 'fixed'
+        }}
         loader={<Loader />}
         visible={resultState.isLoading}
         overlayBlur={2} />
