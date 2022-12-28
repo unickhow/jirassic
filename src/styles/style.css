@@ -43,11 +43,11 @@ a:hover {
 }
 
 html, body {
-  @apply h-full box-border m-0 p-2;
+  @apply box-border m-0 p-2;
 }
 
 #root {
-  @apply h-full;
+  @apply;
 }
 
 .jirassic-gradient {
