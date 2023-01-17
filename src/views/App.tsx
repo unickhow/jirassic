@@ -7,7 +7,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { ISettingState, IFormState, IResultState, IGitHubCommit, IJiraIssueResponse, IMatchedResult } from '../declare/interface';
 import { JiraIssuePatternInCommit, JiraIssuePattern } from '../declare/enum';
 import lf from '../lf';
-import { fetch } from '@tauri-apps/api/http';
+import fetch from '../utils/request';
 import { encode } from 'js-base64';
 
 function App() {
@@ -56,6 +56,9 @@ function App() {
       headers: { Authorization: `Bearer ${settingState.githubToken}` }
     }).then((res: any) => {
       return Promise.resolve(res.data.commits)
+    }).catch(err => {
+      console.error('🚀 ~ fetchPullRequestCommits err: ', err)
+      throw new Error(err)
     })
   }
 
@@ -63,11 +66,11 @@ function App() {
   const fetchJiraIssuesByCommits = async (commits: IGitHubCommit[]) => {
     setMatchedResults([])
     const { jiraDomain, jiraAccount, jiraToken } = settingState
-    const commitMessages: string[] = commits.map((commit) => commit.commit.message)
+    const commitMessages: string[] = commits?.map((commit) => commit.commit.message) ?? []
     const jiraIssueKeys: string[] = [...new Set(commitMessages
-      .filter((message) => message.match(JiraIssuePatternInCommit))
-      .map((message) => message.match(JiraIssuePattern)?.[0] || '')
-      .filter(Boolean))]
+      ?.filter((message) => message.match(JiraIssuePatternInCommit))
+      ?.map((message) => message.match(JiraIssuePattern)?.[0] || '')
+      ?.filter(Boolean))] ?? []
 
     return Promise.all(jiraIssueKeys.map((issueKey) => {
       const token = `${jiraAccount}:${jiraToken}`
@@ -94,6 +97,9 @@ function App() {
         }
         setMatchedResults((state) => [...state, result])
         return Promise.resolve(result)
+      }).catch(err => {
+        console.error('🚀 ~ fetchJiraIssuesByCommits err: ', err)
+        throw new Error(err)
       })
     }))
   }
@@ -118,19 +124,24 @@ function App() {
   }, [isParentDisplay])
   const handleGenerate = async () => {
     setResultState((state) => ({ ...state, isLoading: true }))
-    const commits = await fetchPullRequestCommits()
-    const result = await fetchJiraIssuesByCommits(commits)
 
-    setResultState((state) => ({
-      ...state,
-      isLoading: false,
-      title: `Merge ${formState.compare} into ${formState.base} (${result.map((item) => item.id).join(', ')})`,
-      content: result.map((item) => {
-        return isParentDisplay && item.parent
-          ? item.title.concat(`\r\n${item.parent.title}`)
-          : item.title
-      }).join('\r\n')
-    }))
+    try {
+      const commits = await fetchPullRequestCommits()
+      const result = await fetchJiraIssuesByCommits(commits)
+      setResultState((state) => ({
+        ...state,
+        isLoading: false,
+        title: `Merge ${formState.compare} into ${formState.base} (${result.map((item) => item.id).join(', ')})`,
+        content: result.map((item) => {
+          return isParentDisplay && item.parent
+            ? item.title.concat(`\r\n${item.parent.title}`)
+            : item.title
+        }).join('\r\n')
+      }))
+    } catch (err) {
+      console.error('🚀 ~ handleGenerate err: ', err)
+      setResultState((state) => ({ ...state, isLoading: false }))
+    }
   }
 
   const isResetAvailable = useMemo(() => {
