@@ -162,7 +162,8 @@ const SettingModal = ({ opened, setOpened, settingState, setSettingState }: {
             >Cancel</Button>
             <Space w="sm" />
             <Button
-              color="orange"
+              variant="gradient"
+              gradient={{ from: '#ffda33', to: '#ab3e02', deg: 35 }}
               leftIcon={<IconCheck size={20} />}
               onClick={handleSave}
             >Save</Button>
