@@ -43,11 +43,11 @@ a:hover {
 }
 
 html, body {
-  @apply box-border m-0 p-2;
+  @apply box-border m-0 p-0 min-h-screen;
 }
 
 #root {
-  @apply;
+  @apply p-4;
 }
 
 .jirassic-gradient {
@@ -65,4 +65,8 @@ html, body {
   0%{background-position:0% 9%}
   50%{background-position:100% 92%}
   100%{background-position:0% 9%}
+}
+
+.mantine-Checkbox-input, .mantine-Checkbox-label {
+  @apply cursor-pointer;
 }

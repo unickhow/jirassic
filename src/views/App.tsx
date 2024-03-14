@@ -1,4 +1,5 @@
-import { Title, Button, Space } from '@mantine/core';
+import { Title, Button, Space, LoadingOverlay } from '@mantine/core';
+import { showNotification } from '@mantine/notifications';
 import { IconEggCracked, IconEgg } from '@tabler/icons';
 import GitHubPanel from '../components/gitHubPanel';
 import ResultPanel from '../components/resultPanel';
@@ -9,6 +10,7 @@ import { JiraIssuePatternInCommit, JiraIssuePattern } from '../declare/enum';
 import lf from '../lf';
 import fetch from '../utils/request';
 import { encode } from 'js-base64';
+import { ReactComponent as Loader } from '../assets/loading-dna.svg'
 
 function App() {
   // setting modal data
@@ -55,9 +57,17 @@ function App() {
       method: 'GET',
       headers: { Authorization: `Bearer ${settingState.githubToken}` }
     }).then((res: any) => {
+      if (!res.ok) {
+        return Promise.reject(new Error(res.data?.message || 'GitHub compare failed'))
+      }
       return Promise.resolve(res.data.commits)
     }).catch(err => {
-      console.error('🚀 ~ fetchPullRequestCommits err: ', err)
+      showNotification({
+        title: 'GitHub fetch error',
+        message: err.message,
+        color: 'red',
+        autoClose: 8000
+      });
       throw new Error(err)
     })
   }
@@ -82,6 +92,9 @@ function App() {
           'Authorization': `Basic ${(encode(token))}`
         }
       }).then((res: any) => {
+        if (!res.ok) {
+          return Promise.reject(new Error(res.data?.errorMessages?.[0] || 'Jira issue not found'))
+        }
         const { fields: { summary, issuetype, parent } } = res.data as IJiraIssueResponse
         const result: IMatchedResult = {
           id: issueKey,
@@ -98,7 +111,12 @@ function App() {
         setMatchedResults((state) => [...state, result])
         return Promise.resolve(result)
       }).catch(err => {
-        console.error('🚀 ~ fetchJiraIssuesByCommits err: ', err)
+        showNotification({
+          title: `Jira fetch error: ${issueKey}`,
+          message: err.message,
+          color: 'red',
+          autoClose: 8000
+        });
         throw new Error(err)
       })
     }))
@@ -123,7 +141,11 @@ function App() {
     setResultState((state) => ({ ...state, content: result }))
   }, [isParentDisplay])
   const handleGenerate = async () => {
-    setResultState((state) => ({ ...state, isLoading: true }))
+    setResultState((state) => ({
+      title: '',
+      content: '',
+      isLoading: true
+    }))
 
     try {
       const commits = await fetchPullRequestCommits()
@@ -148,12 +170,6 @@ function App() {
     return resultState.title || resultState.content
   }, [resultState])
   const handleReset = () => {
-    setFormState({
-      owner: '',
-      repository: '',
-      base: '',
-      compare: ''
-    })
     setResultState({
       title: '',
       content: '',
@@ -184,13 +200,13 @@ function App() {
         <Button
           variant="subtle"
           color="gray"
-          leftIcon={<IconEgg size={16} />}
+          leftSection={<IconEgg size={16} />}
           disabled={!isResetAvailable}
           onClick={handleReset}>Reset</Button>
         <Space w="sm" />
         <Button
           variant="gradient" gradient={{ from: '#ffda33', to: '#ab3e02', deg: 35 }}
-          leftIcon={<IconEggCracked size={16} />}
+          leftSection={<IconEggCracked size={16} />}
           disabled={!isGenerateAvailable}
           onClick={handleGenerate}>Generate</Button>
       </div>
@@ -201,6 +217,16 @@ function App() {
           isParentDisplay,
           setIsParentDisplay
         }} />
+
+      {/* loader */}
+      <LoadingOverlay
+        overlayProps={{
+          blur: 2,
+        }}
+        loaderProps={{
+          children: <Loader />,
+        }}
+        visible={resultState.isLoading} />
     </main>
   );
 }

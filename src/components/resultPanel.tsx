@@ -1,9 +1,8 @@
-import { Paper, Input, CopyButton, ActionIcon, LoadingOverlay, Checkbox } from '@mantine/core'
+import { Paper, Input, CopyButton, ActionIcon, Checkbox } from '@mantine/core'
 import { IconCopy, IconCheck } from '@tabler/icons'
 import { IResultState } from '../declare/interface'
 import { writeText } from '@tauri-apps/api/clipboard'
 import { markedPreview } from '../utils/marked'
-import { ReactComponent as Loader } from '../assets/loading-dna.svg'
 
 const ResultPanel = ({ resultState, isParentDisplay, setIsParentDisplay }: {
   resultState: IResultState,
@@ -12,25 +11,19 @@ const ResultPanel = ({ resultState, isParentDisplay, setIsParentDisplay }: {
 }) => {
   return (
     <>
-      <LoadingOverlay
-        sx={{
-          position: 'fixed'
-        }}
-        loader={<Loader />}
-        visible={resultState.isLoading}
-        overlayBlur={2} />
       <Paper shadow="sm" p="md">
         <Input
           value={resultState.title}
           readOnly
+          rightSectionPointerEvents="all"
           rightSection={
-            <CopyButton value={""} timeout={2000}>
+            <CopyButton value={resultState.title} timeout={1000}>
               {({ copied, copy }) => (
                 <ActionIcon
                   color={copied ? 'orange' : 'gray'}
                   radius="xl"
                   variant="transparent"
-                  onClick={() => writeText(resultState.title)}>
+                  onClick={copy}>
                   {copied ? <IconCheck size={16} /> : <IconCopy size={16} />}
                 </ActionIcon>
               )}
@@ -45,13 +38,13 @@ const ResultPanel = ({ resultState, isParentDisplay, setIsParentDisplay }: {
           <div
             className="mr-auto markdown-preview"
             dangerouslySetInnerHTML={{ __html: markedPreview(resultState.content) }} />
-          <CopyButton value={""} timeout={2000}>
+          <CopyButton value={resultState.content} timeout={1000}>
             {({ copied, copy }) => (
               <ActionIcon
                 color={copied ? 'orange' : 'gray'}
                 radius="xl"
                 variant="transparent"
-                onClick={() => writeText(resultState.content)}>
+                onClick={copy}>
                 {copied ? <IconCheck size={16} /> : <IconCopy size={16} />}
               </ActionIcon>
             )}
