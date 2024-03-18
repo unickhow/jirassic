@@ -1,6 +1,7 @@
-import { Paper, Input, ActionIcon, Select } from '@mantine/core';
-import { IconBrandGithub, IconX, IconGitBranch, IconArrowLeftCircle } from '@tabler/icons';
+import { Paper, Input, ActionIcon, CloseButton, Select } from '@mantine/core';
+import { IconBrandGithub, IconGitBranch } from '@tabler/icons';
 import { ISettingState, IFormState } from '../declare/interface'
+import MdiCallMerge from '~icons/mdi/callMerge'
 import lf from '../lf'
 import { useEffect } from 'react';
 
@@ -36,16 +37,16 @@ const GitHubPanel = ({settingState, formState, setFormState}: {
             value={formState.owner}
             onChange={(evt) => setFormState({ ...formState, owner: evt.target.value })}
             onBlur={() => lf.setItem('owner', formState.owner)}
-            icon={<IconBrandGithub size={16} />}
+            leftSection={<IconBrandGithub size={16} />}
             placeholder="Owner"
+            rightSectionPointerEvents="all"
             rightSection={
               formState.owner
-                ? (<ActionIcon
-                    radius="xl"
+                ? (<CloseButton
+                    variant="transparent"
+                    size="sm"
                     tabIndex={-1}
-                    onClick={() => setFormState({ ...formState, owner: '' })}>
-                    <IconX size={12} />
-                  </ActionIcon>)
+                    onClick={() => setFormState({ ...formState, owner: '' })} />)
                 : null
             }
           />
@@ -58,12 +59,12 @@ const GitHubPanel = ({settingState, formState, setFormState}: {
           onChange={(val) => setFormState({ ...formState, repository: val ?? '' })}
           searchable
           clearable
-          icon={<IconGitBranch size={16} />}
+          leftSection={<IconGitBranch size={16} />}
           data={settingState.repositories}
         />
       </div>
 
-      <div className="flex-wrap sm:flex-nowrap flex items-end">
+      <div className="flex flex-col sm:flex-row items-center sm:items-end">
         <Select
           label="Base"
           className="w-full"
@@ -71,14 +72,15 @@ const GitHubPanel = ({settingState, formState, setFormState}: {
           onChange={(val) => setFormState({ ...formState, base: val ?? '' })}
           searchable
           clearable
-          icon={<IconGitBranch size={16} />}
-          data={settingState.branches}
+          leftSection={<IconGitBranch size={16} />}
+          data={settingState.branches.filter((item) => item !== formState.compare)}
         />
         <ActionIcon
-          variant="transparent"
-          className="mb-1"
+          variant="subtle"
+          className="mb-1 mx-1"
+          color="#ab3e02"
           onClick={swapBranch}>
-          <IconArrowLeftCircle size={16} />
+          <MdiCallMerge className="transform sm:-rotate-90" />
         </ActionIcon>
         <Select
           label="Compare"
@@ -87,8 +89,8 @@ const GitHubPanel = ({settingState, formState, setFormState}: {
           onChange={(val) => setFormState({ ...formState, compare: val ?? '' })}
           searchable
           clearable
-          icon={<IconGitBranch size={16} />}
-          data={settingState.branches}
+          leftSection={<IconGitBranch size={16} />}
+          data={settingState.branches.filter((item) => item !== formState.base)}
         />
       </div>
     </Paper>

@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
-import { Modal, ActionIcon, Divider, PasswordInput, MultiSelect, Space, TextInput, Button } from '@mantine/core';
-import { IconSettings, IconKey, IconX, IconUserCircle, IconCheck } from '@tabler/icons';
+import { Modal, ActionIcon, CloseButton, Divider, PasswordInput, TagsInput, Space, TextInput, Button } from '@mantine/core';
+import { IconSettings, IconX, IconUser, IconCheck } from '@tabler/icons';
 import MdiJira from '~icons/mdi/jira'
 import MdiGithubFace from '~icons/mdi/githubFace'
-import MdiConnection from '~icons/mdi/connection'
+import MdiSearchWeb from '~icons/mdi/searchWeb'
+import MdiShieldKey from '~icons/mdi/shieldKey'
 import OcticonRepo from '~icons/octicon/repo'
 import OcticonGitBranch16 from '~icons/octicon/git-branch-16'
 import { ISettingState } from '../declare/interface'
@@ -37,25 +38,34 @@ const SettingModal = ({ opened, setOpened, settingState, setSettingState }: {
 
   return  (
     <>
-      <ActionIcon onClick={() => setOpened(true)}><IconSettings size={20} /></ActionIcon>
+      <ActionIcon
+        variant="transparent"
+        color="gray"
+        onClick={() => setOpened(true)}>
+        <IconSettings size={20} />
+      </ActionIcon>
 
       <Modal
         opened={opened}
         onClose={() => setOpened(false)}
         title={
-          <h2 className="jirassic-gradient m-0">Setting</h2>
+          <span className="jirassic-gradient m-0 text-3xl font-bold">Setting</span>
         }
-        overlayColor="#fafafa"
-        overlayOpacity={0.55}
-        overlayBlur={3}
+        overlayProps={{
+          blur: 4
+        }}
       >
         <div className="github-block p-2">
-          <Divider my="xs" label={
-            <>
-              <MdiGithubFace className="text-lg text-[#2e4052] mr-2" />
-              <span className="text-lg font-bold">GitHub</span>
-            </>
-          } />
+          <Divider
+            my="xs"
+            labelPosition="left"
+            label={
+              <>
+                <MdiGithubFace className="text-lg text-[#2e4052] mr-2" />
+                <span className="text-lg font-bold">GitHub</span>
+              </>
+            }
+          />
           <PasswordInput
             label="Token"
             value={settingState.githubToken}
@@ -63,80 +73,74 @@ const SettingModal = ({ opened, setOpened, settingState, setSettingState }: {
             description={
               <span>go <a className="cursor-pointer" onClick={() => OpenLink('https://github.com/settings/tokens')}>generate</a></span>
             }
-            icon={
-              <IconKey size={20} />
+            leftSection={
+              <MdiShieldKey />
             }
           />
           <Space h="sm" />
-          <MultiSelect
+          <TagsInput
             label="Repositories"
             value={settingState.repositories}
-            data={settingState.repositories}
-            searchable
-            creatable
-            icon={
+            onChange={val => setSettingState({ ...settingState, repositories: val })}
+            placeholder="Add repository"
+            rightSection={
               <OcticonRepo />
             }
-            getCreateLabel={(query) => `+ Create ${query}`}
-            onCreate={(query) => {
-              setSettingState({ ...settingState, repositories: [...settingState.repositories, query] })
-              return query;
-            }}
-            onChange={val => setSettingState({ ...settingState, repositories: val })}
           />
           <Space h="sm" />
-          <MultiSelect
+          <TagsInput
             label="Branches"
             value={settingState.branches}
-            data={settingState.branches}
-            searchable
-            creatable
-            icon={
+            onChange={val => setSettingState({ ...settingState, branches: val })}
+            placeholder="Add branch"
+            rightSection={
               <OcticonGitBranch16 />
             }
-            getCreateLabel={(query) => `+ Create ${query}`}
-            onCreate={(query) => {
-              setSettingState({ ...settingState, branches: [...settingState.branches, query] })
-              return query;
-            }}
-            onChange={val => setSettingState({ ...settingState, branches: val })}
           />
         </div>
         <div className="jira-block p-2">
-          <Divider my="xs" label={
-            <>
-              <MdiJira className="text-lg text-[#0052CC] mr-2" />
-              <span className="text-lg font-bold">Jira</span>
-            </>
-          } />
+          <Divider
+            my="xs"
+            labelPosition="left"
+            label={
+              <>
+                <MdiJira className="text-lg text-[#0052CC] mr-2" />
+                <span className="text-lg font-bold">Jira</span>
+              </>
+            }
+          />
           <TextInput
             label="Domain"
-            icon={
-              <MdiConnection />
+            leftSection={
+              <MdiSearchWeb />
             }
             value={settingState.jiraDomain}
             onChange={(e) => setSettingState({ ...settingState, jiraDomain: e.currentTarget.value })}
             rightSection={
               settingState.jiraDomain
-                ? (<ActionIcon radius="xl" onClick={() => setSettingState({ ...settingState, jiraDomain: '' })}>
-                    <IconX size={12} />
-                  </ActionIcon>)
+                ? (<CloseButton
+                    variant="transparent"
+                    size="sm"
+                    tabIndex={-1}
+                    onClick={() => setSettingState({ ...settingState, jiraDomain: '' })} />)
                 : null
             }
           />
           <Space h="sm" />
           <TextInput
             label="Account"
-            icon={
-              <IconUserCircle />
+            leftSection={
+              <IconUser size={20} />
             }
             value={settingState.jiraAccount}
             onChange={(e) => setSettingState({ ...settingState, jiraAccount: e.currentTarget.value })}
             rightSection={
               settingState.jiraAccount
-                ? (<ActionIcon radius="xl" onClick={() => setSettingState({ ...settingState, jiraAccount: '' })}>
-                    <IconX size={12} />
-                  </ActionIcon>)
+                ? (<CloseButton
+                    variant="transparent"
+                    size="sm"
+                    tabIndex={-1}
+                    onClick={() => setSettingState({ ...settingState, jiraAccount: '' })} />)
                 : null
             }
           />
@@ -148,8 +152,8 @@ const SettingModal = ({ opened, setOpened, settingState, setSettingState }: {
             description={
               <span>go <a className="cursor-pointer" onClick={() => OpenLink('https://id.atlassian.com/manage-profile/security/api-tokens')}>generate</a></span>
             }
-            icon={
-              <IconKey size={20} />
+            leftSection={
+              <MdiShieldKey />
             }
           />
 
@@ -157,14 +161,14 @@ const SettingModal = ({ opened, setOpened, settingState, setSettingState }: {
             <Button
               variant="subtle"
               color="gray"
-              leftIcon={<IconX size={20} />}
+              leftSection={<IconX size={20} />}
               onClick={() => setOpened(false)}
             >Cancel</Button>
             <Space w="sm" />
             <Button
               variant="gradient"
               gradient={{ from: '#ffda33', to: '#ab3e02', deg: 35 }}
-              leftIcon={<IconCheck size={20} />}
+              leftSection={<IconCheck size={20} />}
               onClick={handleSave}
             >Save</Button>
           </div>
