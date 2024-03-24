@@ -1,4 +1,4 @@
-import { Modal, ActionIcon, CloseButton, Divider, PasswordInput, TagsInput, Space, TextInput, Button, Popover, Group, ColorPicker } from '@mantine/core'
+import { Modal, ActionIcon, CloseButton, Divider, PasswordInput, TagsInput, Space, TextInput, Button, Popover, ColorPicker } from '@mantine/core'
 import { IconSettings, IconX, IconUser, IconCheck, IconCubePlus } from '@tabler/icons-react'
 import MdiJira from '~icons/mdi/jira'
 import MdiGithubFace from '~icons/mdi/githubFace'
@@ -11,6 +11,7 @@ import { open as OpenLink } from '@tauri-apps/api/shell'
 import WorkspaceBadge from './workspaceBadge'
 import { useStore } from '../store'
 import { useState, useEffect } from 'react'
+import CONSTANTS from '../utils/constants'
 
 const SettingModal = ({ opened, setOpened, reset }: {
   opened: boolean,
@@ -20,11 +21,9 @@ const SettingModal = ({ opened, setOpened, reset }: {
   const [newWorkspaceName, setNewWorkspaceName] = useState<string>('')
   const [isNewWorkspaceNaming, setIsNewWorkspaceNaming] = useState<boolean>(false)
   const [workspaceColor, setWorkspaceColor] = useState('#ff7800')
-  const colors = ['#2e2e2e', '#868e96', '#fa5252', '#e64980', '#be4bdb', '#7950f2', '#4c6ef5', '#228be6', '#15aabf', '#12b886', '#40c057', '#82c91e', '#fab005', '#ff7800']
+  const colors = CONSTANTS.COLORS.WORKSPACE_COLORS
 
   const store = useStore() as any
-
-  // deep clone setting state from store
   const [settingState, setSettingState] = useState<IWorkspace>({ ...store.currentWorkspace })
 
   useEffect(() => {
@@ -32,10 +31,11 @@ const SettingModal = ({ opened, setOpened, reset }: {
   }, [opened])
 
   const handleWorkspaceCreate = () => {
-    if (!newWorkspaceName) return
+    const value = newWorkspaceName.trim()
+    if (!value) return
     store.setWorkspace({
       ...settingState,
-      name: newWorkspaceName,
+      name: value,
       color: workspaceColor
     })
     setIsNewWorkspaceNaming(false)
@@ -86,7 +86,7 @@ const SettingModal = ({ opened, setOpened, reset }: {
             value={settingState.githubToken}
             onChange={(e) => setSettingState({ ...settingState, githubToken: e.currentTarget.value })}
             description={
-              <span>go <a className="cursor-pointer" onClick={() => OpenLink('https://github.com/settings/tokens')}>generate</a></span>
+              <a className="cursor-pointer" onClick={() => OpenLink('https://github.com/settings/tokens')}>generate</a>
             }
             leftSection={
               <MdiShieldKey />
@@ -134,10 +134,10 @@ const SettingModal = ({ opened, setOpened, reset }: {
             rightSection={
               settingState.jiraDomain
                 ? (<CloseButton
-                    variant="transparent"
-                    size="sm"
-                    tabIndex={-1}
-                    onClick={() => setSettingState({ ...settingState, jiraDomain: '' })} />)
+                  variant="transparent"
+                  size="sm"
+                  tabIndex={-1}
+                  onClick={() => setSettingState({ ...settingState, jiraDomain: '' })} />)
                 : null
             }
           />
@@ -152,10 +152,10 @@ const SettingModal = ({ opened, setOpened, reset }: {
             rightSection={
               settingState.jiraAccount
                 ? (<CloseButton
-                    variant="transparent"
-                    size="sm"
-                    tabIndex={-1}
-                    onClick={() => setSettingState({ ...settingState, jiraAccount: '' })} />)
+                  variant="transparent"
+                  size="sm"
+                  tabIndex={-1}
+                  onClick={() => setSettingState({ ...settingState, jiraAccount: '' })} />)
                 : null
             }
           />
@@ -165,7 +165,7 @@ const SettingModal = ({ opened, setOpened, reset }: {
             value={settingState.jiraToken}
             onChange={(e) => setSettingState({ ...settingState, jiraToken: e.currentTarget.value })}
             description={
-              <span>go <a className="cursor-pointer" onClick={() => OpenLink('https://id.atlassian.com/manage-profile/security/api-tokens')}>generate</a></span>
+              <a className="cursor-pointer" onClick={() => OpenLink('https://id.atlassian.com/manage-profile/security/api-tokens')}>generate</a>
             }
             leftSection={
               <MdiShieldKey />
@@ -186,6 +186,9 @@ const SettingModal = ({ opened, setOpened, reset }: {
               position="bottom"
               withArrow
               shadow="md"
+              classNames={{
+                dropdown: 'max-w-[300px]'
+              }}
               opened={isNewWorkspaceNaming}
               onOpen={() => {
                 setNewWorkspaceName('')
@@ -202,7 +205,7 @@ const SettingModal = ({ opened, setOpened, reset }: {
                   Save as
                 </Button>
               </Popover.Target>
-              <Popover.Dropdown bg="var(--mantine-color-body)">
+              <Popover.Dropdown>
                 <div>
                   <ColorPicker
                     format="hex"
@@ -212,10 +215,11 @@ const SettingModal = ({ opened, setOpened, reset }: {
                     className="mb-4"
                     value={workspaceColor}
                     onChange={setWorkspaceColor} />
-                  <Group>
+                  <div className="flex items-center gap-2">
                     <TextInput
                       placeholder="New workspace name"
-                      value={newWorkspaceName}
+                      value={newWorkspaceName.trim()}
+                      size="xs"
                       leftSection={
                         <div className="w-4 h-4 rounded" style={{ background: workspaceColor }} />
                       }
@@ -223,13 +227,14 @@ const SettingModal = ({ opened, setOpened, reset }: {
                     <Button
                       variant="gradient"
                       size="xs"
-                      disabled={!newWorkspaceName}
+                      className="flex-shrink-0"
+                      disabled={!newWorkspaceName.trim()}
                       gradient={{ from: '#ffda33', to: '#ab3e02', deg: 35 }}
                       leftSection={<IconCheck size={20} />}
                       onClick={handleWorkspaceCreate}>
                       Save
                     </Button>
-                  </Group>
+                  </div>
                 </div>
               </Popover.Dropdown>
             </Popover>

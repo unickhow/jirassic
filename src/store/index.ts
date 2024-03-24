@@ -43,7 +43,10 @@ export const useStore = create(
         if (index !== -1) {
           workspaces.splice(index, 1)
         }
-      }
+      },
+      setCurrentWorkspace: (workspace: IWorkspace) => {
+        set((state: any) => state.currentWorkspace = workspace )
+      },
     }),
     {
       version: 1,

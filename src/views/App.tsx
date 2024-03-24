@@ -1,21 +1,22 @@
-import { Title, Button, Space, LoadingOverlay } from '@mantine/core';
-import { showNotification } from '@mantine/notifications';
-import { IconEggCracked, IconEgg } from '@tabler/icons-react';
-import GitHubPanel from '../components/gitHubPanel';
-import ResultPanel from '../components/resultPanel';
-import SettingModal from '../components/settingModal';
-import { useState, useEffect, useMemo } from 'react';
-import { IFormState, IResultState, IGitHubCommit, IJiraIssueResponse, IMatchedResult } from '../declare/interface';
-import { JiraIssuePatternInCommit, JiraIssuePattern } from '../declare/enum';
-import fetch from '../utils/request';
-import { encode } from 'js-base64';
+import { Title, Button, Space, LoadingOverlay } from '@mantine/core'
+import { showNotification } from '@mantine/notifications'
+import { IconEggCracked, IconEgg } from '@tabler/icons-react'
+import GitHubPanel from '../components/gitHubPanel'
+import ResultPanel from '../components/resultPanel'
+import SettingModal from '../components/settingModal'
+import { useState, useEffect, useMemo } from 'react'
+import { IFormState, IResultState, IGitHubCommit, IJiraIssueResponse, IMatchedResult } from '../declare/interface'
+import { JiraIssuePatternInCommit, JiraIssuePattern } from '../declare/enum'
+import fetch from '../utils/request'
+import { encode } from 'js-base64'
 import { ReactComponent as Loader } from '../assets/loading-dna.svg'
-import WorkspaceBadge from '../components/workspaceBadge';
-import { useStore } from '../store';
+import WorkspaceBadge from '../components/workspaceBadge'
+import { useStore } from '../store'
+import CONSTANTS from '../utils/constants'
 
 function App() {
   // setting modal data
-  const [opened, setOpened] = useState<boolean>(false);
+  const [opened, setOpened] = useState<boolean>(false)
   const store = useStore() as any
 
   // github panel data
@@ -25,6 +26,14 @@ function App() {
     base: '',
     compare: ''
   })
+
+  // init owner from current workspace
+  useEffect(() => {
+    setFormState(state => ({
+      ...state,
+      owner: store.currentWorkspace.owner
+    }))
+  }, [store.currentWorkspace.owner])
 
   const [resultState, setResultState] = useState<IResultState>({
     title: '',
@@ -48,8 +57,8 @@ function App() {
         title: 'GitHub fetch error',
         message: err.message,
         color: 'red',
-        autoClose: 8000
-      });
+        autoClose: CONSTANTS.NOTIFICATION_DURATION
+      })
       throw new Error(err)
     })
   }
@@ -97,8 +106,8 @@ function App() {
           title: `Jira fetch error: ${issueKey}`,
           message: err.message,
           color: 'red',
-          autoClose: 8000
-        });
+          autoClose: CONSTANTS.NOTIFICATION_DURATION
+        })
         throw new Error(err)
       })
     }))
@@ -109,19 +118,6 @@ function App() {
     const { owner, repository, base, compare } = formState
     return owner && repository && base && compare
   }, [formState])
-  useEffect(() => {
-    let result = ''
-    if (isParentDisplay) {
-      result = matchedResults.map((item) => {
-        return item.parent
-          ? item.title.concat(`\r\n${item.parent.title}`)
-          : item.title
-      }).join('\r\n')
-    } else {
-      result = matchedResults.map((item) => item.title).join('\r\n')
-    }
-    setResultState((state) => ({ ...state, content: result }))
-  }, [isParentDisplay])
   const handleGenerate = async () => {
     store.setWorkspace({
       ...store.currentWorkspace,
@@ -153,18 +149,44 @@ function App() {
     }
   }
 
-  const handleReset = () => {
-    setFormState({
-      owner: '',
-      repository: null,
-      base: null,
-      compare: null
-    })
+  useEffect(() => {
+    let result = ''
+    if (isParentDisplay) {
+      result = matchedResults.map((item) => {
+        return item.parent
+          ? item.title.concat(`\r\n${item.parent.title}`)
+          : item.title
+      }).join('\r\n')
+    } else {
+      result = matchedResults.map((item) => item.title).join('\r\n')
+    }
+    setResultState((state) => ({ ...state, content: result }))
+  }, [isParentDisplay])
+
+  const handleReset = ({ includeOwner = true } = {}) => {
+    // reset github panel
+    if (includeOwner) {
+      setFormState({
+        owner: '',
+        repository: '',
+        base: '',
+        compare: ''
+      })
+    } else {
+      setFormState(state => ({
+        owner: state.owner,
+        repository: '',
+        base: '',
+        compare: ''
+      }))
+    }
+    // reset result panel
     setResultState({
       title: '',
       content: '',
       isLoading: false
     })
+    setMatchedResults([])
     setIsParentDisplay(false)
   }
 
@@ -175,7 +197,15 @@ function App() {
           order={1}
           className="jirassic-gradient">Jirassic</Title>
         <div className="flex items-center gap-2">
-          <WorkspaceBadge />
+          <WorkspaceBadge
+            selectable
+            setOwner={() => {
+              handleReset()
+              setFormState(state => ({
+                ...state,
+                owner: store.currentWorkspace.owner
+              }))
+            }} />
           <SettingModal
             opened={opened}
             setOpened={setOpened}
@@ -192,21 +222,20 @@ function App() {
           variant="subtle"
           color="gray"
           leftSection={<IconEgg size={16} />}
-          onClick={handleReset}>Reset</Button>
+          onClick={() => handleReset({ includeOwner: false })}>Reset</Button>
         <Space w="sm" />
         <Button
-          variant="gradient" gradient={{ from: '#ffda33', to: '#ab3e02', deg: 35 }}
+          variant="gradient"
+          gradient={{ from: '#ffda33', to: '#ab3e02', deg: 35 }}
           leftSection={<IconEggCracked size={16} />}
           disabled={!isGenerateAvailable}
           onClick={handleGenerate}>Generate</Button>
       </div>
 
       <ResultPanel
-        {...{
-          resultState,
-          isParentDisplay,
-          setIsParentDisplay
-        }} />
+        resultState={resultState}
+        isParentDisplay={isParentDisplay}
+        setIsParentDisplay={setIsParentDisplay} />
 
       {/* loader */}
       <LoadingOverlay
@@ -218,7 +247,7 @@ function App() {
         }}
         visible={resultState.isLoading} />
     </main>
-  );
+  )
 }
 
-export default App;
+export default App

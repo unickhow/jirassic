@@ -4,5 +4,10 @@ import transformerDirectives from '@unocss/transformer-directives'
 export default defineConfig({
   transformers: [
     transformerDirectives()
-  ]
+  ],
+  theme: {
+    colors: {
+      primary: '#ab3e02',
+    }
+  }
 })

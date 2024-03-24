@@ -3,6 +3,7 @@ import { IconBrandGithub, IconGitBranch, IconNotebook } from '@tabler/icons-reac
 import { IFormState } from '../declare/interface'
 import MdiCallMerge from '~icons/mdi/callMerge'
 import { useStore } from '../store'
+import CONSTANTS from '../utils/constants'
 
 const GitHubPanel = ({formState, setFormState}: {
   formState: IFormState,
@@ -32,7 +33,6 @@ const GitHubPanel = ({formState, setFormState}: {
             value={formState.owner}
             onChange={(evt) => handleOwnerChange(evt.target.value)}
             leftSection={<IconBrandGithub size={16} />}
-            placeholder="Owner"
             rightSectionPointerEvents="all"
             rightSection={
               formState.owner
@@ -49,7 +49,7 @@ const GitHubPanel = ({formState, setFormState}: {
         <Select
           label="Repository"
           className="w-full"
-          value={formState.repository}
+          value={formState.repository || null}
           onChange={(val) => setFormState({ ...formState, repository: val ?? '' })}
           searchable
           clearable
@@ -62,7 +62,7 @@ const GitHubPanel = ({formState, setFormState}: {
         <Select
           label="Base"
           className="w-full"
-          value={formState.base}
+          value={formState.base || null}
           onChange={(val) => setFormState({ ...formState, base: val ?? '' })}
           searchable
           clearable
@@ -72,14 +72,14 @@ const GitHubPanel = ({formState, setFormState}: {
         <ActionIcon
           variant="subtle"
           className="mb-1 mx-1"
-          color="#ab3e02"
+          color={CONSTANTS.COLORS.PRIMARY_DARK}
           onClick={swapBranch}>
           <MdiCallMerge className="transform sm:-rotate-90" />
         </ActionIcon>
         <Select
           label="Compare"
           className="w-full"
-          value={formState.compare}
+          value={formState.compare || null}
           onChange={(val) => setFormState({ ...formState, compare: val ?? '' })}
           searchable
           clearable
