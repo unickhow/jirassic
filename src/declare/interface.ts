@@ -1,17 +1,21 @@
-export interface ISettingState {
+export interface IWorkspace {
+  id: string,
+  name: string,
+  owner: string;
   githubToken: string;
   repositories: string[];
   branches: string[];
   jiraDomain: string;
   jiraAccount: string;
   jiraToken: string;
+  color: string;
 }
 
 export interface IFormState {
   owner: string,
-  repository: string,
-  base: string,
-  compare: string
+  repository: string | null,
+  base: string | null,
+  compare: string | null
 }
 
 export interface IResultState {

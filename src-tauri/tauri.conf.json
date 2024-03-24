@@ -71,7 +71,9 @@
         "resizable": true,
         "title": "Jirassic",
         "width": 800,
-        "theme": "Light"
+        "theme": "Light",
+        "minHeight": 500,
+        "minWidth": 500
       }
     ]
   }

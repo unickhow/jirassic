@@ -1,5 +1,5 @@
 import { Paper, Input, CopyButton, ActionIcon, Checkbox } from '@mantine/core'
-import { IconCopy, IconCheck } from '@tabler/icons'
+import { IconCopy, IconCheck } from '@tabler/icons-react'
 import { IResultState } from '../declare/interface'
 import { writeText } from '@tauri-apps/api/clipboard'
 import { markedPreview } from '../utils/marked'

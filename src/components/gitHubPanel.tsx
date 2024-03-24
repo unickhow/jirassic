@@ -1,24 +1,15 @@
-import { Paper, Input, ActionIcon, CloseButton, Select } from '@mantine/core';
-import { IconBrandGithub, IconGitBranch } from '@tabler/icons';
-import { ISettingState, IFormState } from '../declare/interface'
+import { Paper, Input, ActionIcon, CloseButton, Select } from '@mantine/core'
+import { IconBrandGithub, IconGitBranch, IconNotebook } from '@tabler/icons-react'
+import { IFormState } from '../declare/interface'
 import MdiCallMerge from '~icons/mdi/callMerge'
-import lf from '../lf'
-import { useEffect } from 'react';
+import { useStore } from '../store'
 
-const GitHubPanel = ({settingState, formState, setFormState}: {
-  settingState: ISettingState,
+const GitHubPanel = ({formState, setFormState}: {
   formState: IFormState,
   setFormState: (formState: IFormState) => void
 }) => {
-  useEffect(() => {
-    lf.getItem('owner').then((value) => {
-      if (value && typeof value === 'string') {
-        setFormState({ ...formState, owner: value })
-      }
-    }).catch((err) => {
-      console.error(err)
-    })
-  }, [])
+  const repositories = useStore((state: any) => state.currentWorkspace.repositories) as string[]
+  const branches = useStore((state: any) => state.currentWorkspace.branches) as string[]
 
   const swapBranch = () => {
     setFormState({
@@ -28,6 +19,10 @@ const GitHubPanel = ({settingState, formState, setFormState}: {
     })
   }
 
+  const handleOwnerChange = (owner: string) => {
+    setFormState({ ...formState, owner })
+  }
+
   return (
     <Paper shadow="sm" p="md">
       <div className="flex-wrap sm:flex-nowrap flex items-end mb-2">
@@ -35,8 +30,7 @@ const GitHubPanel = ({settingState, formState, setFormState}: {
           <Input
             autoFocus
             value={formState.owner}
-            onChange={(evt) => setFormState({ ...formState, owner: evt.target.value })}
-            onBlur={() => lf.setItem('owner', formState.owner)}
+            onChange={(evt) => handleOwnerChange(evt.target.value)}
             leftSection={<IconBrandGithub size={16} />}
             placeholder="Owner"
             rightSectionPointerEvents="all"
@@ -59,8 +53,8 @@ const GitHubPanel = ({settingState, formState, setFormState}: {
           onChange={(val) => setFormState({ ...formState, repository: val ?? '' })}
           searchable
           clearable
-          leftSection={<IconGitBranch size={16} />}
-          data={settingState.repositories}
+          leftSection={<IconNotebook size={16} />}
+          data={repositories}
         />
       </div>
 
@@ -73,7 +67,7 @@ const GitHubPanel = ({settingState, formState, setFormState}: {
           searchable
           clearable
           leftSection={<IconGitBranch size={16} />}
-          data={settingState.branches.filter((item) => item !== formState.compare)}
+          data={branches.filter((item) => item !== formState.compare)}
         />
         <ActionIcon
           variant="subtle"
@@ -90,7 +84,7 @@ const GitHubPanel = ({settingState, formState, setFormState}: {
           searchable
           clearable
           leftSection={<IconGitBranch size={16} />}
-          data={settingState.branches.filter((item) => item !== formState.base)}
+          data={branches.filter((item) => item !== formState.base)}
         />
       </div>
     </Paper>

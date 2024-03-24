@@ -1,47 +1,22 @@
 import { Title, Button, Space, LoadingOverlay } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
-import { IconEggCracked, IconEgg } from '@tabler/icons';
+import { IconEggCracked, IconEgg } from '@tabler/icons-react';
 import GitHubPanel from '../components/gitHubPanel';
 import ResultPanel from '../components/resultPanel';
 import SettingModal from '../components/settingModal';
 import { useState, useEffect, useMemo } from 'react';
-import { ISettingState, IFormState, IResultState, IGitHubCommit, IJiraIssueResponse, IMatchedResult } from '../declare/interface';
+import { IFormState, IResultState, IGitHubCommit, IJiraIssueResponse, IMatchedResult } from '../declare/interface';
 import { JiraIssuePatternInCommit, JiraIssuePattern } from '../declare/enum';
-import lf from '../lf';
 import fetch from '../utils/request';
 import { encode } from 'js-base64';
 import { ReactComponent as Loader } from '../assets/loading-dna.svg'
+import WorkspaceBadge from '../components/workspaceBadge';
+import { useStore } from '../store';
 
 function App() {
   // setting modal data
   const [opened, setOpened] = useState<boolean>(false);
-  const [settingState, setSettingState] = useState<ISettingState>({
-    githubToken: '',
-    repositories: [],
-    branches: [],
-    jiraDomain: '',
-    jiraAccount: '',
-    jiraToken: ''
-  })
-
-  const [resultState, setResultState] = useState<IResultState>({
-    title: '',
-    content: '',
-    isLoading: false
-  })
-  const [isParentDisplay, setIsParentDisplay] = useState<boolean>(false)
-
-  useEffect(() => {
-    async function initForm () {
-      lf.iterate((value, key) => {
-        setSettingState((form: ISettingState) => ({ ...form, [key]: value }))
-      }).catch((err) => {
-        console.error(err)
-      });
-    }
-    initForm()
-  }, [opened])
-  //
+  const store = useStore() as any
 
   // github panel data
   const [formState, setFormState] = useState<IFormState>({
@@ -51,11 +26,18 @@ function App() {
     compare: ''
   })
 
+  const [resultState, setResultState] = useState<IResultState>({
+    title: '',
+    content: '',
+    isLoading: false
+  })
+  const [isParentDisplay, setIsParentDisplay] = useState<boolean>(false)
+
   const fetchPullRequestCommits = async () => {
     const { owner, repository, base, compare } = formState
     return fetch(`https://api.github.com/repos/${owner}/${repository}/compare/${base}...${compare}`, {
       method: 'GET',
-      headers: { Authorization: `Bearer ${settingState.githubToken}` }
+      headers: { Authorization: `Bearer ${store.currentWorkspace.githubToken}` }
     }).then((res: any) => {
       if (!res.ok) {
         return Promise.reject(new Error(res.data?.message || 'GitHub compare failed'))
@@ -75,7 +57,7 @@ function App() {
   const [matchedResults, setMatchedResults] = useState<IMatchedResult[]>([])
   const fetchJiraIssuesByCommits = async (commits: IGitHubCommit[]) => {
     setMatchedResults([])
-    const { jiraDomain, jiraAccount, jiraToken } = settingState
+    const { jiraDomain, jiraAccount, jiraToken } = store.currentWorkspace
     const commitMessages: string[] = commits?.map((commit) => commit.commit.message) ?? []
     const jiraIssueKeys: string[] = [...new Set(commitMessages
       ?.filter((message) => message.match(JiraIssuePatternInCommit))
@@ -141,6 +123,11 @@ function App() {
     setResultState((state) => ({ ...state, content: result }))
   }, [isParentDisplay])
   const handleGenerate = async () => {
+    store.setWorkspace({
+      ...store.currentWorkspace,
+      owner: formState.owner
+    })
+
     setResultState((state) => ({
       title: '',
       content: '',
@@ -166,10 +153,13 @@ function App() {
     }
   }
 
-  const isResetAvailable = useMemo(() => {
-    return resultState.title || resultState.content
-  }, [resultState])
   const handleReset = () => {
+    setFormState({
+      owner: '',
+      repository: null,
+      base: null,
+      compare: null
+    })
     setResultState({
       title: '',
       content: '',
@@ -184,15 +174,16 @@ function App() {
         <Title
           order={1}
           className="jirassic-gradient">Jirassic</Title>
-        <SettingModal
-          opened={opened}
-          setOpened={setOpened}
-          settingState={settingState}
-          setSettingState={setSettingState} />
+        <div className="flex items-center gap-2">
+          <WorkspaceBadge />
+          <SettingModal
+            opened={opened}
+            setOpened={setOpened}
+            reset={handleReset} />
+        </div>
       </div>
 
       <GitHubPanel
-        settingState={settingState}
         formState={formState}
         setFormState={setFormState} />
 
@@ -201,7 +192,6 @@ function App() {
           variant="subtle"
           color="gray"
           leftSection={<IconEgg size={16} />}
-          disabled={!isResetAvailable}
           onClick={handleReset}>Reset</Button>
         <Space w="sm" />
         <Button
