@@ -4,6 +4,7 @@ import { IconEggCracked, IconEgg } from '@tabler/icons-react'
 import GitHubPanel from '../components/gitHubPanel'
 import ResultPanel from '../components/resultPanel'
 import SettingModal from '../components/settingModal'
+import RemoveWorkspace from '../components/removeWorkspace'
 import { useState, useEffect, useMemo } from 'react'
 import { IFormState, IResultState, IGitHubCommit, IJiraIssueResponse, IMatchedResult } from '../declare/interface'
 import { JiraIssuePatternInCommit, JiraIssuePattern } from '../declare/enum'
@@ -33,7 +34,7 @@ function App() {
       ...state,
       owner: store.currentWorkspace.owner
     }))
-  }, [store.currentWorkspace.owner])
+  }, [])
 
   const [resultState, setResultState] = useState<IResultState>({
     title: '',
@@ -236,6 +237,8 @@ function App() {
         resultState={resultState}
         isParentDisplay={isParentDisplay}
         setIsParentDisplay={setIsParentDisplay} />
+
+      <RemoveWorkspace />
 
       {/* loader */}
       <LoadingOverlay

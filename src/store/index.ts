@@ -38,11 +38,9 @@ export const useStore = create(
       removeWorkspace: (workspace: IWorkspace) => {
         const workspaces = (get() as any).workspaces
         if (workspaces.length === 1) return
-
-        const index = workspaces.findIndex((ws: IWorkspace) => ws.name === workspace.name)
-        if (index !== -1) {
-          workspaces.splice(index, 1)
-        }
+        const newWorkspaces = workspaces.filter((ws: IWorkspace) => ws.name !== workspace.name)
+        set((state: any) => state.currentWorkspace = newWorkspaces[0])
+        set((state: any) => state.workspaces = newWorkspaces)
       },
       setCurrentWorkspace: (workspace: IWorkspace) => {
         set((state: any) => state.currentWorkspace = workspace )
