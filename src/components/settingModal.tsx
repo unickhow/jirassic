@@ -1,39 +1,51 @@
-import { useEffect } from 'react';
-import { Modal, ActionIcon, CloseButton, Divider, PasswordInput, TagsInput, Space, TextInput, Button } from '@mantine/core';
-import { IconSettings, IconX, IconUser, IconCheck } from '@tabler/icons';
+import { Modal, ActionIcon, CloseButton, Divider, PasswordInput, TagsInput, Space, TextInput, Button, Popover, ColorPicker } from '@mantine/core'
+import { IconSettings, IconX, IconUser, IconCheck, IconCubePlus } from '@tabler/icons-react'
 import MdiJira from '~icons/mdi/jira'
 import MdiGithubFace from '~icons/mdi/githubFace'
 import MdiSearchWeb from '~icons/mdi/searchWeb'
 import MdiShieldKey from '~icons/mdi/shieldKey'
 import OcticonRepo from '~icons/octicon/repo'
 import OcticonGitBranch16 from '~icons/octicon/git-branch-16'
-import { ISettingState } from '../declare/interface'
-import lf from '../lf'
+import { IWorkspace } from '../declare/interface'
 import { open as OpenLink } from '@tauri-apps/api/shell'
+import WorkspaceBadge from './workspaceBadge'
+import { useStore } from '../store'
+import { useState, useEffect } from 'react'
+import CONSTANTS from '../utils/constants'
 
-const SettingModal = ({ opened, setOpened, settingState, setSettingState }: {
+const SettingModal = ({ opened, setOpened, reset }: {
   opened: boolean,
   setOpened: (opened: boolean) => void,
-  settingState: ISettingState,
-  setSettingState: (settingState: ISettingState) => void
+  reset: () => void
 }) => {
+  const [newWorkspaceName, setNewWorkspaceName] = useState<string>('')
+  const [isNewWorkspaceNaming, setIsNewWorkspaceNaming] = useState<boolean>(false)
+  const [workspaceColor, setWorkspaceColor] = useState('#ff7800')
+  const colors = CONSTANTS.COLORS.WORKSPACE_COLORS
+
+  const store = useStore() as any
+  const [settingState, setSettingState] = useState<IWorkspace>({ ...store.currentWorkspace })
 
   useEffect(() => {
-    async function initForm () {
-      lf.iterate((value, key) => {
-        setSettingState({ ...settingState, [key]: value })
-      }).catch((err) => {
-        console.error(err)
-      });
-    }
-    initForm()
-  }, [])
+    setSettingState({ ...store.currentWorkspace })
+  }, [opened])
 
-  const handleSave = () => {
-    Object.entries(settingState).forEach(([key, value]) => {
-      lf.setItem(key, value)
+  const handleWorkspaceCreate = () => {
+    const value = newWorkspaceName.trim()
+    if (!value) return
+    store.setWorkspace({
+      ...settingState,
+      name: value,
+      color: workspaceColor
     })
-    setOpened(false);
+    setIsNewWorkspaceNaming(false)
+    reset()
+    setOpened(false)
+  }
+
+  const handleSave = async () => {
+    store.setWorkspace(settingState)
+    setOpened(false)
   }
 
   return  (
@@ -49,7 +61,10 @@ const SettingModal = ({ opened, setOpened, settingState, setSettingState }: {
         opened={opened}
         onClose={() => setOpened(false)}
         title={
-          <span className="jirassic-gradient m-0 text-3xl font-bold">Setting</span>
+          <div className="flex items-center gap-2">
+            <span className="jirassic-gradient m-0 text-3xl font-bold">Setting</span>
+            <WorkspaceBadge />
+          </div>
         }
         overlayProps={{
           blur: 4
@@ -71,7 +86,7 @@ const SettingModal = ({ opened, setOpened, settingState, setSettingState }: {
             value={settingState.githubToken}
             onChange={(e) => setSettingState({ ...settingState, githubToken: e.currentTarget.value })}
             description={
-              <span>go <a className="cursor-pointer" onClick={() => OpenLink('https://github.com/settings/tokens')}>generate</a></span>
+              <a className="cursor-pointer" onClick={() => OpenLink('https://github.com/settings/tokens')}>generate</a>
             }
             leftSection={
               <MdiShieldKey />
@@ -119,10 +134,10 @@ const SettingModal = ({ opened, setOpened, settingState, setSettingState }: {
             rightSection={
               settingState.jiraDomain
                 ? (<CloseButton
-                    variant="transparent"
-                    size="sm"
-                    tabIndex={-1}
-                    onClick={() => setSettingState({ ...settingState, jiraDomain: '' })} />)
+                  variant="transparent"
+                  size="sm"
+                  tabIndex={-1}
+                  onClick={() => setSettingState({ ...settingState, jiraDomain: '' })} />)
                 : null
             }
           />
@@ -137,10 +152,10 @@ const SettingModal = ({ opened, setOpened, settingState, setSettingState }: {
             rightSection={
               settingState.jiraAccount
                 ? (<CloseButton
-                    variant="transparent"
-                    size="sm"
-                    tabIndex={-1}
-                    onClick={() => setSettingState({ ...settingState, jiraAccount: '' })} />)
+                  variant="transparent"
+                  size="sm"
+                  tabIndex={-1}
+                  onClick={() => setSettingState({ ...settingState, jiraAccount: '' })} />)
                 : null
             }
           />
@@ -150,27 +165,89 @@ const SettingModal = ({ opened, setOpened, settingState, setSettingState }: {
             value={settingState.jiraToken}
             onChange={(e) => setSettingState({ ...settingState, jiraToken: e.currentTarget.value })}
             description={
-              <span>go <a className="cursor-pointer" onClick={() => OpenLink('https://id.atlassian.com/manage-profile/security/api-tokens')}>generate</a></span>
+              <a className="cursor-pointer" onClick={() => OpenLink('https://id.atlassian.com/manage-profile/security/api-tokens')}>generate</a>
             }
             leftSection={
               <MdiShieldKey />
             }
           />
 
-          <div className="modal-actions mt-8 flex justify-center">
+          <div className="modal-actions mt-8 flex justify-between">
             <Button
               variant="subtle"
               color="gray"
+              size="xs"
               leftSection={<IconX size={20} />}
-              onClick={() => setOpened(false)}
-            >Cancel</Button>
+              onClick={() => setOpened(false)}>
+              Cancel
+            </Button>
+            <Space w="sm" />
+            <Popover
+              position="bottom"
+              withArrow
+              shadow="md"
+              classNames={{
+                dropdown: 'max-w-[300px]'
+              }}
+              opened={isNewWorkspaceNaming}
+              onOpen={() => {
+                setNewWorkspaceName('')
+                setIsNewWorkspaceNaming(true)
+              }}
+              onClose={() => setIsNewWorkspaceNaming(false)} >
+              <Popover.Target>
+                <Button
+                  variant="subtle"
+                  size="xs"
+                  color="#dfa153"
+                  leftSection={<IconCubePlus size={20} />}
+                  onClick={() => setIsNewWorkspaceNaming(true)}>
+                  Save as
+                </Button>
+              </Popover.Target>
+              <Popover.Dropdown>
+                <div>
+                  <ColorPicker
+                    format="hex"
+                    swatches={colors}
+                    withPicker={false}
+                    fullWidth
+                    className="mb-4"
+                    value={workspaceColor}
+                    onChange={setWorkspaceColor} />
+                  <div className="flex items-center gap-2">
+                    <TextInput
+                      placeholder="New workspace name"
+                      value={newWorkspaceName.trim()}
+                      size="xs"
+                      leftSection={
+                        <div className="w-4 h-4 rounded" style={{ background: workspaceColor }} />
+                      }
+                      onChange={(e) => setNewWorkspaceName(e.currentTarget.value)} />
+                    <Button
+                      variant="gradient"
+                      size="xs"
+                      className="flex-shrink-0"
+                      disabled={!newWorkspaceName.trim()}
+                      gradient={{ from: '#ffda33', to: '#ab3e02', deg: 35 }}
+                      leftSection={<IconCheck size={20} />}
+                      onClick={handleWorkspaceCreate}>
+                      Save
+                    </Button>
+                  </div>
+                </div>
+              </Popover.Dropdown>
+            </Popover>
             <Space w="sm" />
             <Button
               variant="gradient"
+              size="xs"
+              disabled={isNewWorkspaceNaming}
               gradient={{ from: '#ffda33', to: '#ab3e02', deg: 35 }}
               leftSection={<IconCheck size={20} />}
-              onClick={handleSave}
-            >Save</Button>
+              onClick={handleSave}>
+              Save
+            </Button>
           </div>
         </div>
       </Modal>

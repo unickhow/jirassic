@@ -1,8 +1,9 @@
 import { Paper, Input, CopyButton, ActionIcon, Checkbox } from '@mantine/core'
-import { IconCopy, IconCheck } from '@tabler/icons'
+import { IconCopy, IconCheck } from '@tabler/icons-react'
 import { IResultState } from '../declare/interface'
-import { writeText } from '@tauri-apps/api/clipboard'
 import { markedPreview } from '../utils/marked'
+import MdiFileTree from '~icons/mdi/fileTree'
+import CONSTANTS from '../utils/constants'
 
 const ResultPanel = ({ resultState, isParentDisplay, setIsParentDisplay }: {
   resultState: IResultState,
@@ -32,16 +33,18 @@ const ResultPanel = ({ resultState, isParentDisplay, setIsParentDisplay }: {
         <Checkbox
           label="Show parent issue for sub-task"
           className="mt-2"
+          icon={MdiFileTree}
+          color={CONSTANTS.COLORS.PRIMARY_DARK}
           checked={isParentDisplay}
           onChange={(e) => setIsParentDisplay(e.currentTarget.checked)} />
         <div className="mt-2 border border-gray-300 rounded text-sm flex p-1">
           <div
             className="mr-auto markdown-preview"
-            dangerouslySetInnerHTML={{ __html: markedPreview(resultState.content) }} />
+            dangerouslySetInnerHTML={{ __html: markedPreview(resultState.content ?? '') }} />
           <CopyButton value={resultState.content} timeout={1000}>
             {({ copied, copy }) => (
               <ActionIcon
-                color={copied ? 'orange' : 'gray'}
+                color={copied ? CONSTANTS.COLORS.PRIMARY_DARK : 'gray'}
                 radius="xl"
                 variant="transparent"
                 onClick={copy}>
@@ -52,7 +55,7 @@ const ResultPanel = ({ resultState, isParentDisplay, setIsParentDisplay }: {
         </div>
       </Paper>
     </>
-  );
-};
+  )
+}
 
-export default ResultPanel;
+export default ResultPanel

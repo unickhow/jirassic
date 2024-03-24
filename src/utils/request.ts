@@ -1,5 +1,5 @@
-import { fetch } from '@tauri-apps/api/http';
-import { showNotification } from '@mantine/notifications';
+import { fetch } from '@tauri-apps/api/http'
+import { showNotification } from '@mantine/notifications'
 
 export default async function request(url: string, options: any) {
   const optionsPayload = {
@@ -9,9 +9,9 @@ export default async function request(url: string, options: any) {
   return fetch(url, optionsPayload)
     .then((response) => {
       if (response.status === 401) {
-        throw new Error('Unauthorized');
+        throw new Error('Unauthorized')
       }
-      return response;
+      return response
     })
     .catch((error) => {
       if (error.message === 'Unauthorized') {
@@ -19,14 +19,14 @@ export default async function request(url: string, options: any) {
           title: 'Unauthorized',
           message: 'Try to re-enter your github/jira token',
           color: 'red'
-        });
+        })
       } else {
         showNotification({
           title: 'Error',
           message: 'Something went wrong, please try again',
           color: 'red'
-        });
+        })
       }
       return Promise.reject(error)
-    });
+    })
 }
