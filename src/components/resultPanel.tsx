@@ -1,11 +1,14 @@
 import { Paper, Input, CopyButton, ActionIcon, Checkbox } from '@mantine/core'
 import { IconCopy, IconCheck } from '@tabler/icons-react'
-import { IResultState } from '../declare/interface'
+import { IResultState, IFormState } from '../declare/interface'
 import { markedPreview } from '../utils/marked'
 import MdiFileTree from '~icons/mdi/fileTree'
+import MaterialSymbolsOpenInNewRounded from '~icons/material-symbols/open-in-new-rounded'
 import CONSTANTS from '../utils/constants'
+import { open as OpenLink } from '@tauri-apps/api/shell'
 
-const ResultPanel = ({ resultState, isParentDisplay, setIsParentDisplay }: {
+const ResultPanel = ({ formState, resultState, isParentDisplay, setIsParentDisplay }: {
+  formState: IFormState,
   resultState: IResultState,
   isParentDisplay: boolean,
   setIsParentDisplay: (isParentDisplay: boolean) => void
@@ -13,23 +16,37 @@ const ResultPanel = ({ resultState, isParentDisplay, setIsParentDisplay }: {
   return (
     <>
       <Paper shadow="sm" p="md">
-        <Input
-          value={resultState.title}
-          readOnly
-          rightSectionPointerEvents="all"
-          rightSection={
-            <CopyButton value={resultState.title} timeout={1000}>
-              {({ copied, copy }) => (
-                <ActionIcon
-                  color={copied ? 'orange' : 'gray'}
-                  radius="xl"
-                  variant="transparent"
-                  onClick={copy}>
-                  {copied ? <IconCheck size={16} /> : <IconCopy size={16} />}
-                </ActionIcon>
-              )}
-            </CopyButton>
-          }/>
+        <div className="flex items-center gap-2">
+          <Input
+            className="flex-1"
+            value={resultState.title}
+            readOnly
+            rightSectionPointerEvents="all"
+            rightSection={
+              <CopyButton value={resultState.title} timeout={1000}>
+                {({ copied, copy }) => (
+                  resultState.title &&
+                  <ActionIcon
+                    color={copied ? 'orange' : 'gray'}
+                    radius="xl"
+                    variant="transparent"
+                    onClick={copy}>
+                    {copied ? <IconCheck size={16} /> : <IconCopy size={16} />}
+                  </ActionIcon>
+                )}
+              </CopyButton>
+            }/>
+          {
+            resultState.title &&
+            <ActionIcon
+              variant="light"
+              size="lg"
+              color="#dfa153"
+              onClick={() => OpenLink(`https://github.com/${formState.owner}/${formState.repository}/compare/${formState.base}...${formState.compare}`)}>
+              <MaterialSymbolsOpenInNewRounded />
+            </ActionIcon>
+          }
+        </div>
         <Checkbox
           label="Show parent issue for sub-task"
           className="mt-2"
@@ -39,10 +56,11 @@ const ResultPanel = ({ resultState, isParentDisplay, setIsParentDisplay }: {
           onChange={(e) => setIsParentDisplay(e.currentTarget.checked)} />
         <div className="mt-2 border border-gray-300 rounded text-sm flex p-1">
           <div
-            className="mr-auto markdown-preview"
+            className="mr-auto markdown-preview min-h-[1.875rem]"
             dangerouslySetInnerHTML={{ __html: markedPreview(resultState.content ?? '') }} />
           <CopyButton value={resultState.content} timeout={1000}>
             {({ copied, copy }) => (
+              resultState.content &&
               <ActionIcon
                 color={copied ? CONSTANTS.COLORS.PRIMARY_DARK : 'gray'}
                 radius="xl"
