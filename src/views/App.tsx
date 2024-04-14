@@ -234,6 +234,7 @@ function App() {
       </div>
 
       <ResultPanel
+        formState={formState}
         resultState={resultState}
         isParentDisplay={isParentDisplay}
         setIsParentDisplay={setIsParentDisplay} />
