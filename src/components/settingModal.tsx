@@ -1,11 +1,9 @@
 import { Modal, ActionIcon, CloseButton, Divider, PasswordInput, TagsInput, Space, TextInput, Button, Popover, ColorPicker } from '@mantine/core'
-import { IconSettings, IconX, IconUser, IconCheck, IconCubePlus } from '@tabler/icons-react'
+import { IconSettings, IconX, IconUser, IconCheck, IconCubePlus, IconGitBranch, IconNotebook } from '@tabler/icons-react'
 import MdiJira from '~icons/mdi/jira'
 import MdiGithubFace from '~icons/mdi/githubFace'
 import MdiSearchWeb from '~icons/mdi/searchWeb'
 import MdiShieldKey from '~icons/mdi/shieldKey'
-import OcticonRepo from '~icons/octicon/repo'
-import OcticonGitBranch16 from '~icons/octicon/git-branch-16'
 import { IWorkspace } from '../declare/interface'
 import { open as OpenLink } from '@tauri-apps/api/shell'
 import WorkspaceBadge from './workspaceBadge'
@@ -98,8 +96,8 @@ const SettingModal = ({ opened, setOpened, reset }: {
             value={settingState.repositories}
             onChange={val => setSettingState({ ...settingState, repositories: val })}
             placeholder="Add repository"
-            rightSection={
-              <OcticonRepo />
+            leftSection={
+              <IconNotebook size={20} />
             }
           />
           <Space h="sm" />
@@ -108,8 +106,8 @@ const SettingModal = ({ opened, setOpened, reset }: {
             value={settingState.branches}
             onChange={val => setSettingState({ ...settingState, branches: val })}
             placeholder="Add branch"
-            rightSection={
-              <OcticonGitBranch16 />
+            leftSection={
+              <IconGitBranch size={20} />
             }
           />
         </div>
@@ -129,6 +127,7 @@ const SettingModal = ({ opened, setOpened, reset }: {
             leftSection={
               <MdiSearchWeb />
             }
+            placeholder="https://your-domain.atlassian.net"
             value={settingState.jiraDomain}
             onChange={(e) => setSettingState({ ...settingState, jiraDomain: e.currentTarget.value })}
             rightSection={
@@ -147,6 +146,7 @@ const SettingModal = ({ opened, setOpened, reset }: {
             leftSection={
               <IconUser size={20} />
             }
+            placeholder="user@mail.com"
             value={settingState.jiraAccount}
             onChange={(e) => setSettingState({ ...settingState, jiraAccount: e.currentTarget.value })}
             rightSection={
