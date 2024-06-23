@@ -60,3 +60,63 @@ export interface IMatchedResult {
     title: string
   } | null
 }
+
+export interface IUnmergedPullRequest {
+  title: string
+  url: string
+  isDraft: boolean
+  base: {
+    ref: string
+    label: string
+    sha: string
+    repo: any
+    user: any
+  }
+  head: {
+    ref: string
+    label: string
+    sha: string
+    repo: any
+    user: any
+  }
+  author: string
+}
+
+export interface IStatisticsRecord {
+  unmergedPullRequests: IUnmergedPullRequest[]
+}
+
+export interface IStoreStatistics {
+  [workspace: string]: {
+    repos: {
+      [repo: string]: IStatisticsRecord
+    }
+  } & {
+    lastFetchTime: string
+  }
+}
+
+export interface IGitHubPullRequest {
+  base: {
+    ref: string
+    label: string
+    sha: string
+    repo: any
+    user: any
+  }
+  head: {
+    ref: string
+    label: string
+    sha: string
+    repo: any
+    user: any
+  }
+  user: {
+    login: string
+  }
+  html_url: string
+  draft: boolean
+  title: string
+  state: string
+  // ... and more
+}

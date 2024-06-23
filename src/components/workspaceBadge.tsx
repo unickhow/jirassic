@@ -7,8 +7,8 @@ const WorkspaceBadge = ({ selectable = false, setOwner }: {
   selectable?: boolean,
   setOwner?: () => void
 }) => {
-  const currentWorkspace = useStore((state: any) => state.currentWorkspace)
-  const workspaces = useStore((state: any) => state.workspaces)
+  const currentWorkspace = useStore((state: any) => state.currentWorkspace || {})
+  const workspaces = useStore((state: any) => state.workspaces || [])
 
   const [isOpened, setIsOpened] = useState<boolean>(false)
   const ref = useClickOutside(() => setIsOpened(false))

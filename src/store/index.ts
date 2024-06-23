@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { IWorkspace } from '../declare/interface'
+import type { IWorkspace, IStoreStatistics } from '../declare/interface'
 
 function randomId() {
   // TODO: use id for comparison instead of name
@@ -23,7 +23,6 @@ const defaultWorkspace: IWorkspace = {
 export const useStore = create(
   persist(
     (set, get) => ({
-      currentWorkspace: defaultWorkspace as IWorkspace,
       workspaces: [defaultWorkspace as IWorkspace],
       setWorkspace: (workspace: IWorkspace) => {
         const workspaces = (get() as any).workspaces
@@ -35,6 +34,8 @@ export const useStore = create(
         }
         set({ currentWorkspace: workspace })
       },
+
+      currentWorkspace: defaultWorkspace as IWorkspace,
       removeWorkspace: (workspace: IWorkspace) => {
         const workspaces = (get() as any).workspaces
         if (workspaces.length === 1) return
@@ -43,8 +44,29 @@ export const useStore = create(
         set((state: any) => state.workspaces = newWorkspaces)
       },
       setCurrentWorkspace: (workspace: IWorkspace) => {
-        set((state: any) => state.currentWorkspace = workspace )
+        set((state: any) => state.currentWorkspace = workspace)
       },
+
+      statistics: {} as IStoreStatistics,
+      getCurrentWorkspaceStatistics: () => {
+        const workspaceName = (get() as any).currentWorkspace.name
+        return (get() as any).statistics[workspaceName]
+      },
+      setStatistics: (statistics: IStoreStatistics) => {
+        const workspaceName = (get() as any).currentWorkspace.name
+        return set((state: any) => ({
+          statistics: {
+            ...state.statistics,
+            [workspaceName]: statistics
+          }
+        }))
+      },
+      removeStatistics: (workspace: IWorkspace) => {
+        const workspaceName = workspace.name
+        const statistics = (get() as any).statistics
+        delete statistics[workspaceName]
+        set((state: any) => state.statistics = statistics)
+      }
     }),
     {
       version: 1,
