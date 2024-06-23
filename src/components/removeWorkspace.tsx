@@ -5,8 +5,8 @@ import { useStore } from '../store'
 import { useState, useMemo } from 'react'
 
 const RemoveWorkspace = () => {
-  const workspaces = useStore((state: any) => state.workspaces)
-  const currentWorkspace = useStore((state: any) => state.currentWorkspace)
+  const workspaces = useStore((state: any) => state.workspaces || [])
+  const currentWorkspace = useStore((state: any) => state.currentWorkspace || {})
   const [inputValue, setInputValue] = useState<string>('')
   const canDelete = useMemo(() => inputValue === currentWorkspace.name, [inputValue, currentWorkspace.name])
   const removeWorkspace = useStore((state: any) => state.removeWorkspace)
@@ -15,7 +15,7 @@ const RemoveWorkspace = () => {
     removeWorkspace(currentWorkspace)
   }
   return (
-    workspaces.length > 1
+    workspaces?.length > 1
       ? <div className="text-right mt-4">
           <Popover
             width={300}

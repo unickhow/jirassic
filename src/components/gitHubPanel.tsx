@@ -9,8 +9,8 @@ const GitHubPanel = ({formState, setFormState}: {
   formState: IFormState,
   setFormState: (formState: IFormState) => void
 }) => {
-  const repositories = useStore((state: any) => state.currentWorkspace.repositories) as string[]
-  const branches = useStore((state: any) => state.currentWorkspace.branches) as string[]
+  const repositories = useStore((state: any) => state.currentWorkspace?.repositories || []) as string[]
+  const branches = useStore((state: any) => state.currentWorkspace?.branches || []) as string[]
 
   const swapBranch = () => {
     setFormState({
@@ -28,6 +28,7 @@ const GitHubPanel = ({formState, setFormState}: {
     <Paper shadow="sm" p="md">
       <div className="flex-wrap sm:flex-nowrap flex items-end mb-2">
         <Input.Wrapper label="Owner" className="w-full sm:w-[300px]">
+          {/* TODO: set owner in setting modal */}
           <Input
             autoFocus
             value={formState.owner}

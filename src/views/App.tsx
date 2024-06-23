@@ -4,6 +4,7 @@ import { IconEggCracked, IconEgg } from '@tabler/icons-react'
 import GitHubPanel from '../components/gitHubPanel'
 import ResultPanel from '../components/resultPanel'
 import SettingModal from '../components/settingModal'
+import StatisticsModal from '../components/statisticsModal'
 import RemoveWorkspace from '../components/removeWorkspace'
 import { useState, useEffect, useMemo } from 'react'
 import { IFormState, IResultState, IGitHubCommit, IJiraIssueResponse, IMatchedResult } from '../declare/interface'
@@ -17,8 +18,11 @@ import CONSTANTS from '../utils/constants'
 
 function App() {
   // setting modal data
-  const [opened, setOpened] = useState<boolean>(false)
+  const [settingOpened, setSettingOpened] = useState<boolean>(false)
   const store = useStore() as any
+
+  // statistics modal data
+  const [statisticsOpened, setStatisticsOpened] = useState<boolean>(false)
 
   // github panel data
   const [formState, setFormState] = useState<IFormState>({
@@ -197,7 +201,7 @@ function App() {
         <Title
           order={1}
           className="jirassic-gradient">Jirassic</Title>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
           <WorkspaceBadge
             selectable
             setOwner={() => {
@@ -207,9 +211,12 @@ function App() {
                 owner: store.currentWorkspace.owner
               }))
             }} />
+          <StatisticsModal
+            opened={statisticsOpened}
+            setOpened={setStatisticsOpened} />
           <SettingModal
-            opened={opened}
-            setOpened={setOpened}
+            opened={settingOpened}
+            setOpened={setSettingOpened}
             reset={handleReset} />
         </div>
       </div>
