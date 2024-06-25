@@ -1,4 +1,4 @@
-import { Paper, Input, ActionIcon, CloseButton, Select } from '@mantine/core'
+import { Paper, Input, ActionIcon, Select } from '@mantine/core'
 import { IconBrandGithub, IconGitBranch, IconNotebook } from '@tabler/icons-react'
 import { IFormState } from '../declare/interface'
 import MdiCallMerge from '~icons/mdi/callMerge'
@@ -11,6 +11,7 @@ const GitHubPanel = ({formState, setFormState}: {
 }) => {
   const repositories = useStore((state: any) => state.currentWorkspace?.repositories || []) as string[]
   const branches = useStore((state: any) => state.currentWorkspace?.branches || []) as string[]
+  const currentOwner = useStore((state: any) => state.currentWorkspace?.owner || '') as string
 
   const swapBranch = () => {
     setFormState({
@@ -20,30 +21,15 @@ const GitHubPanel = ({formState, setFormState}: {
     })
   }
 
-  const handleOwnerChange = (owner: string) => {
-    setFormState({ ...formState, owner })
-  }
-
   return (
     <Paper shadow="sm" p="md">
       <div className="flex-wrap sm:flex-nowrap flex items-end mb-2">
-        <Input.Wrapper label="Owner" className="w-full sm:w-[300px]">
-          {/* TODO: set owner in setting modal */}
+        <Input.Wrapper label="Owner" className="w-full sm:w-[300px] border-none">
           <Input
             autoFocus
-            value={formState.owner}
-            onChange={(evt) => handleOwnerChange(evt.target.value)}
+            value={currentOwner}
+            readOnly
             leftSection={<IconBrandGithub size={16} />}
-            rightSectionPointerEvents="all"
-            rightSection={
-              formState.owner
-                ? (<CloseButton
-                    variant="transparent"
-                    size="sm"
-                    tabIndex={-1}
-                    onClick={() => setFormState({ ...formState, owner: '' })} />)
-                : null
-            }
           />
         </Input.Wrapper>
         <span className="mx-2 text-xl opacity-30 mb-1 hidden sm:block">/</span>

@@ -202,15 +202,7 @@ function App() {
           order={1}
           className="jirassic-gradient">Jirassic</Title>
         <div className="flex items-center gap-4">
-          <WorkspaceBadge
-            selectable
-            setOwner={() => {
-              handleReset()
-              setFormState(state => ({
-                ...state,
-                owner: store.currentWorkspace.owner
-              }))
-            }} />
+          <WorkspaceBadge selectable />
           <StatisticsModal
             opened={statisticsOpened}
             setOpened={setStatisticsOpened} />

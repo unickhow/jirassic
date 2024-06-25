@@ -3,9 +3,8 @@ import { useStore } from '../store'
 import { useState } from 'react'
 import { useClickOutside } from '@mantine/hooks'
 
-const WorkspaceBadge = ({ selectable = false, setOwner }: {
-  selectable?: boolean,
-  setOwner?: () => void
+const WorkspaceBadge = ({ selectable = false }: {
+  selectable?: boolean
 }) => {
   const currentWorkspace = useStore((state: any) => state.currentWorkspace || {})
   const workspaces = useStore((state: any) => state.workspaces || [])
@@ -44,7 +43,6 @@ const WorkspaceBadge = ({ selectable = false, setOwner }: {
               key={workspace.name}
               onClick={() => {
                 setCurrentWorkspace(workspace)
-                if (selectable && typeof setOwner === 'function') setOwner()
                 setIsOpened(false)
               }}>
               <div

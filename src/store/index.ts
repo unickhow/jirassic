@@ -1,11 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { IWorkspace, IStoreStatistics } from '../declare/interface'
-
-function randomId() {
-  // TODO: use id for comparison instead of name
-  return Math.random().toString(36).substring(7)
-}
+import { randomId } from '../utils/helper'
 
 const defaultWorkspace: IWorkspace = {
   id: randomId(),
@@ -26,11 +22,16 @@ export const useStore = create(
       workspaces: [defaultWorkspace as IWorkspace],
       setWorkspace: (workspace: IWorkspace) => {
         const workspaces = (get() as any).workspaces
-        const index = workspaces.findIndex((ws: IWorkspace) => ws.name === workspace.name)
+        const index = workspaces.findIndex((ws: IWorkspace) => ws.id === workspace.id)
         if (index !== -1) {
           workspaces[index] = workspace
         } else {
-          set({ workspaces: [...(get() as any).workspaces, workspace] })
+          set({
+            workspaces: [
+              ...(get() as any).workspaces,
+              workspace
+            ]
+          })
         }
         set({ currentWorkspace: workspace })
       },

@@ -88,11 +88,10 @@ export interface IStatisticsRecord {
 
 export interface IStoreStatistics {
   [workspace: string]: {
+    lastFetchTime: string,
     repos: {
       [repo: string]: IStatisticsRecord
     }
-  } & {
-    lastFetchTime: string
   }
 }
 

@@ -1,5 +1,5 @@
-import { Modal, ActionIcon, CloseButton, Divider, PasswordInput, TagsInput, Space, TextInput, Button, Popover, ColorPicker } from '@mantine/core'
-import { IconSettings, IconX, IconUser, IconCheck, IconCubePlus, IconGitBranch, IconNotebook } from '@tabler/icons-react'
+import { Modal, ActionIcon, CloseButton, Divider, Input, PasswordInput, TagsInput, Space, TextInput, Button, Popover, ColorPicker } from '@mantine/core'
+import { IconSettings, IconX, IconUser, IconCheck, IconCubePlus, IconGitBranch, IconNotebook, IconBrandGithub } from '@tabler/icons-react'
 import MdiJira from '~icons/mdi/jira'
 import MdiGithubFace from '~icons/mdi/githubFace'
 import MdiSearchWeb from '~icons/mdi/searchWeb'
@@ -10,6 +10,7 @@ import WorkspaceBadge from './workspaceBadge'
 import { useStore } from '../store'
 import { useState, useEffect } from 'react'
 import CONSTANTS from '../utils/constants'
+import { randomId } from '../utils/helper'
 
 const SettingModal = ({ opened, setOpened, reset }: {
   opened: boolean,
@@ -29,12 +30,13 @@ const SettingModal = ({ opened, setOpened, reset }: {
   }, [opened])
 
   const handleWorkspaceCreate = () => {
-    const value = newWorkspaceName.trim()
-    if (!value) return
+    const name = newWorkspaceName.trim()
+    if (!name) return
     store.setWorkspace({
       ...settingState,
-      name: value,
-      color: workspaceColor
+      name,
+      color: workspaceColor,
+      id: randomId()
     })
     setIsNewWorkspaceNaming(false)
     reset()
@@ -79,6 +81,25 @@ const SettingModal = ({ opened, setOpened, reset }: {
               </>
             }
           />
+          <Input.Wrapper label="Owner" className="w-full">
+            <Input
+              autoFocus
+              value={settingState.owner}
+              onChange={(e) => setSettingState({ ...settingState, owner: e.currentTarget.value })}
+              leftSection={<IconBrandGithub size={16} />}
+              rightSectionPointerEvents="all"
+              rightSection={
+                settingState.owner
+                  ? (<CloseButton
+                      variant="transparent"
+                      size="sm"
+                      tabIndex={-1}
+                      onClick={() => setSettingState({ ...settingState, owner: '' })} />)
+                  : null
+              }
+            />
+          </Input.Wrapper>
+          <Space h="sm" />
           <PasswordInput
             label="Token"
             value={settingState.githubToken}
