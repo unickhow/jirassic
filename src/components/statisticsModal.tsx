@@ -1,4 +1,4 @@
-import { ActionIcon, Modal, Badge, LoadingOverlay } from '@mantine/core'
+import { ActionIcon, Modal, Badge, LoadingOverlay, Tooltip } from '@mantine/core'
 import MdiHumanMaleBoardPoll from '~icons/mdi/humanMaleBoardPoll'
 import { useStore } from '../store'
 import { ReactComponent as Loader } from '../assets/loading-dna.svg'
@@ -7,7 +7,7 @@ import MaterialSymbolsOpenInNewRounded from '~icons/material-symbols/open-in-new
 import { open as OpenLink } from '@tauri-apps/api/shell'
 import { useState, useEffect } from 'react'
 import { IconReload } from '@tabler/icons-react'
-import type { IUnmergedPullRequest, IStoreStatistics, IGitHubPullRequest } from '../declare/interface'
+import type { IUnmergedPullRequest, IGitHubPullRequest } from '../declare/interface'
 import { showNotification } from '@mantine/notifications'
 
 const StatisticsModal = ({ opened, setOpened }: {
@@ -18,20 +18,9 @@ const StatisticsModal = ({ opened, setOpened }: {
   const setStatistics = useStore((state: any) => state.setStatistics)
   const currentStatistics = useStore((state: any) => state.getCurrentWorkspaceStatistics())
   const currentWorkspace = useStore((state: any) => state.currentWorkspace)
-  const [unmergedOfRepositories, setUnmergedOfRepositories] = useState<IStoreStatistics>({})
-  const [lastFetchTime, setLastFetchTime] = useState<string | null>(null)
   const [isFetching, setIsFetching] = useState<boolean>(false)
 
-  useEffect(() => {
-    // TODO: reset statistics when workspace changed
-    if (!currentStatistics) {
-      setUnmergedOfRepositories({})
-      setLastFetchTime(null)
-      return
-    }
-    setUnmergedOfRepositories(currentStatistics.repos)
-    setLastFetchTime(currentStatistics.lastFetchTime)
-  }, [statistics])
+  const canFetchStatistics = currentWorkspace.owner && currentWorkspace.githubToken && currentWorkspace.repositories.length > 0
 
   const fetchUnMergedPullRequests = async (repo: string) => {
     return fetch(`https://api.github.com/repos/${currentWorkspace.owner}/${repo}/pulls?state=open`, {
@@ -51,7 +40,6 @@ const StatisticsModal = ({ opened, setOpened }: {
     setIsFetching(true)
     try {
       const allPullRequests = {} as any
-
       const promises = currentWorkspace.repositories.map(async (repo: string) => {
         const unMergedPullRequests = await fetchUnMergedPullRequests(repo)
         allPullRequests[repo] = unMergedPullRequests.map((pr: IGitHubPullRequest) => ({
@@ -92,12 +80,15 @@ const StatisticsModal = ({ opened, setOpened }: {
 
   return (
     <>
-      <ActionIcon
-        variant="transparent"
-        color="gray"
-        onClick={() => setOpened(true)}>
-        <MdiHumanMaleBoardPoll className="text-lg" />
-      </ActionIcon>
+      <Tooltip label="GitHub setting is incomplete." disabled={canFetchStatistics}>
+        <ActionIcon
+          variant="transparent"
+          color="gray"
+          disabled={!canFetchStatistics}
+          onClick={() => setOpened(true)}>
+          <MdiHumanMaleBoardPoll className="text-lg" />
+        </ActionIcon>
+      </Tooltip>
 
       <Modal
         opened={opened}
@@ -120,7 +111,7 @@ const StatisticsModal = ({ opened, setOpened }: {
             visible={isFetching} />
 
           <div className="text-xs flex items-center gap-4">
-            <p>Last updated: {lastFetchTime || '---'}</p>
+            <p>Last updated: {currentStatistics?.lastFetchTime || '---'}</p>
             <ActionIcon
               variant="transparent"
               color="gray"
@@ -130,9 +121,9 @@ const StatisticsModal = ({ opened, setOpened }: {
             </ActionIcon>
           </div>
         {
-          Object.entries(unmergedOfRepositories).length === 0
+          Object.entries(currentStatistics?.repos || []).length === 0
             ? <p className="text-center text-sm text-gray-500 mt-4">No unmerged pull requests</p>
-            : Object.entries(unmergedOfRepositories).map(([repo, prs]: [string, any]) => (
+            : Object.entries(currentStatistics?.repos || []).map(([repo, prs]: [string, any]) => (
               <div key={repo} className="p-2">
                 <h3 className="flex items-center gap-2 mb-2">
                   <span>{repo}</span>
