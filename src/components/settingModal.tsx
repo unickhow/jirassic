@@ -22,17 +22,19 @@ const SettingModal = ({ opened, setOpened, reset }: {
   const [workspaceColor, setWorkspaceColor] = useState('#ff7800')
   const colors = CONSTANTS.COLORS.WORKSPACE_COLORS
 
-  const store = useStore() as any
-  const [settingState, setSettingState] = useState<IWorkspace>({ ...store.currentWorkspace })
+  const currentWorkspace = useStore((state: any) => state.currentWorkspace || {})
+  const setWorkspace = useStore((state: any) => state.setWorkspace)
+
+  const [settingState, setSettingState] = useState<IWorkspace>({ ...currentWorkspace })
 
   useEffect(() => {
-    setSettingState({ ...store.currentWorkspace })
+    setSettingState({ ...currentWorkspace })
   }, [opened])
 
   const handleWorkspaceCreate = () => {
     const name = newWorkspaceName.trim()
     if (!name) return
-    store.setWorkspace({
+    setWorkspace({
       ...settingState,
       name,
       color: workspaceColor,
@@ -44,7 +46,7 @@ const SettingModal = ({ opened, setOpened, reset }: {
   }
 
   const handleSave = async () => {
-    store.setWorkspace(settingState)
+    setWorkspace(settingState)
     setOpened(false)
   }
 

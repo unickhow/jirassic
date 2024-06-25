@@ -1,4 +1,4 @@
-import { ActionIcon, Modal, Badge, LoadingOverlay } from '@mantine/core'
+import { ActionIcon, Modal, Badge, LoadingOverlay, Tooltip } from '@mantine/core'
 import MdiHumanMaleBoardPoll from '~icons/mdi/humanMaleBoardPoll'
 import { useStore } from '../store'
 import { ReactComponent as Loader } from '../assets/loading-dna.svg'
@@ -21,6 +21,8 @@ const StatisticsModal = ({ opened, setOpened }: {
   const [unmergedOfRepositories, setUnmergedOfRepositories] = useState<IStoreStatistics>({})
   const [lastFetchTime, setLastFetchTime] = useState<string | null>(null)
   const [isFetching, setIsFetching] = useState<boolean>(false)
+
+  const canFetchStatistics = currentWorkspace.owner && currentWorkspace.githubToken && currentWorkspace.repositories.length > 0
 
   useEffect(() => {
     // TODO: reset statistics when workspace changed
@@ -51,7 +53,6 @@ const StatisticsModal = ({ opened, setOpened }: {
     setIsFetching(true)
     try {
       const allPullRequests = {} as any
-
       const promises = currentWorkspace.repositories.map(async (repo: string) => {
         const unMergedPullRequests = await fetchUnMergedPullRequests(repo)
         allPullRequests[repo] = unMergedPullRequests.map((pr: IGitHubPullRequest) => ({
@@ -92,12 +93,15 @@ const StatisticsModal = ({ opened, setOpened }: {
 
   return (
     <>
-      <ActionIcon
-        variant="transparent"
-        color="gray"
-        onClick={() => setOpened(true)}>
-        <MdiHumanMaleBoardPoll className="text-lg" />
-      </ActionIcon>
+      <Tooltip label="GitHub setting is incomplete." disabled={canFetchStatistics}>
+        <ActionIcon
+          variant="transparent"
+          color="gray"
+          disabled={!canFetchStatistics}
+          onClick={() => setOpened(true)}>
+          <MdiHumanMaleBoardPoll className="text-lg" />
+        </ActionIcon>
+      </Tooltip>
 
       <Modal
         opened={opened}
