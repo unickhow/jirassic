@@ -9,6 +9,7 @@ function drive () {
     showProgress: hasTour,
     showButtons: ['next', 'previous', 'close'],
     allowClose: hasTour,
+    disableActiveInteraction: true,
     steps: [
       {
         popover: {
