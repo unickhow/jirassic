@@ -1,5 +1,5 @@
-import { Button, Popover, Text, TextInput } from '@mantine/core'
-import MdiWindowClose from '~icons/mdi/windowClose'
+import { Button, Popover, Text, TextInput, ActionIcon } from '@mantine/core'
+import MdiArchiveRemoveOutline from '~icons/mdi/archiveRemoveOutline'
 import MdiCheckAll from '~icons/mdi/checkAll'
 import { useStore } from '../store'
 import { useState, useMemo } from 'react'
@@ -16,7 +16,7 @@ const RemoveWorkspace = () => {
   }
   return (
     workspaces?.length > 1
-      ? <div className="text-right mt-4">
+      ? <div>
           <Popover
             width={300}
             position="top-end"
@@ -25,16 +25,15 @@ const RemoveWorkspace = () => {
             arrowOffset={20}
             shadow="md">
             <Popover.Target>
-              <Button
-                size="xs"
+              <ActionIcon
+                className="transition-opacity opacity-50 hover:opacity-100"
                 variant="transparent"
-                color="red"
-                className="text-[10px] transition-opacity opacity-50 hover:opacity-100"
-                leftSection={<MdiWindowClose />}>
-                Remove workspace
-              </Button>
+                color="red">
+                <MdiArchiveRemoveOutline className="text-2xl" />
+              </ActionIcon>
             </Popover.Target>
             <Popover.Dropdown>
+              <b>Rename workspace</b>
               <Text size="xs">Enter the workspace name with caution. Deletion is permanent.</Text>
               <div className="flex items-center gap-2 mt-2">
                 <TextInput

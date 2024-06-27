@@ -5,7 +5,7 @@ import { ReactComponent as Loader } from '../assets/loading-dna.svg'
 import fetch from '../utils/request'
 import MaterialSymbolsOpenInNewRounded from '~icons/material-symbols/open-in-new-rounded'
 import { open as OpenLink } from '@tauri-apps/api/shell'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { IconReload } from '@tabler/icons-react'
 import type { IUnmergedPullRequest, IGitHubPullRequest } from '../declare/interface'
 import { showNotification } from '@mantine/notifications'
@@ -14,7 +14,6 @@ const StatisticsModal = ({ opened, setOpened }: {
   opened: boolean,
   setOpened: (opened: boolean) => void
 }) => {
-  const statistics = useStore((state: any) => state.statistics)
   const setStatistics = useStore((state: any) => state.setStatistics)
   const currentStatistics = useStore((state: any) => state.getCurrentWorkspaceStatistics())
   const currentWorkspace = useStore((state: any) => state.currentWorkspace)
@@ -82,6 +81,7 @@ const StatisticsModal = ({ opened, setOpened }: {
     <>
       <Tooltip label="GitHub setting is incomplete." disabled={canFetchStatistics}>
         <ActionIcon
+          id="btn_statistics_modal"
           variant="transparent"
           color="gray"
           disabled={!canFetchStatistics}
@@ -113,6 +113,7 @@ const StatisticsModal = ({ opened, setOpened }: {
           <div className="text-xs flex items-center gap-4">
             <p>Last updated: {currentStatistics?.lastFetchTime || '---'}</p>
             <ActionIcon
+              id="btn_refresh_statistics"
               variant="transparent"
               color="gray"
               size="xs"

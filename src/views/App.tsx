@@ -1,4 +1,4 @@
-import { Title, Button, Space, LoadingOverlay } from '@mantine/core'
+import { Title, Button, Space, LoadingOverlay, ActionIcon } from '@mantine/core'
 import { showNotification } from '@mantine/notifications'
 import { IconEggCracked, IconEgg } from '@tabler/icons-react'
 import GitHubPanel from '../components/gitHubPanel'
@@ -15,11 +15,14 @@ import { ReactComponent as Loader } from '../assets/loading-dna.svg'
 import WorkspaceBadge from '../components/workspaceBadge'
 import { useStore } from '../store'
 import CONSTANTS from '../utils/constants'
+import drive from '../utils/driver'
+import MdiCrosshairsQuestion from '~icons/mdi/crosshairsQuestion'
 
 function App() {
   // setting modal data
   const [settingOpened, setSettingOpened] = useState<boolean>(false)
-  const store = useStore() as any
+  const currentWorkspace = useStore((state: any) => state.currentWorkspace)
+  const setWorkspace = useStore((state: any) => state.setWorkspace)
 
   // statistics modal data
   const [statisticsOpened, setStatisticsOpened] = useState<boolean>(false)
@@ -33,11 +36,14 @@ function App() {
   })
 
   // init owner from current workspace
+  const hasTour = useStore((state: any) => state.hasTour)
   useEffect(() => {
     setFormState(state => ({
       ...state,
-      owner: store.currentWorkspace.owner
+      owner: currentWorkspace.owner
     }))
+
+    if (!hasTour) drive()
   }, [])
 
   const [resultState, setResultState] = useState<IResultState>({
@@ -51,7 +57,7 @@ function App() {
     const { owner, repository, base, compare } = formState
     return fetch(`https://api.github.com/repos/${owner}/${repository}/compare/${base}...${compare}`, {
       method: 'GET',
-      headers: { Authorization: `Bearer ${store.currentWorkspace.githubToken}` }
+      headers: { Authorization: `Bearer ${currentWorkspace.githubToken}` }
     }).then((res: any) => {
       if (!res.ok) {
         return Promise.reject(new Error(res.data?.message || 'GitHub compare failed'))
@@ -71,7 +77,7 @@ function App() {
   const [matchedResults, setMatchedResults] = useState<IMatchedResult[]>([])
   const fetchJiraIssuesByCommits = async (commits: IGitHubCommit[]) => {
     setMatchedResults([])
-    const { jiraDomain, jiraAccount, jiraToken } = store.currentWorkspace
+    const { jiraDomain, jiraAccount, jiraToken } = currentWorkspace
     const commitMessages: string[] = commits?.map((commit) => commit.commit.message) ?? []
     const jiraIssueKeys: string[] = [...new Set(commitMessages
       ?.filter((message) => message.match(JiraIssuePatternInCommit))
@@ -124,8 +130,8 @@ function App() {
     return owner && repository && base && compare
   }, [formState])
   const handleGenerate = async () => {
-    store.setWorkspace({
-      ...store.currentWorkspace,
+    setWorkspace({
+      ...currentWorkspace,
       owner: formState.owner
     })
 
@@ -238,7 +244,17 @@ function App() {
         isParentDisplay={isParentDisplay}
         setIsParentDisplay={setIsParentDisplay} />
 
-      <RemoveWorkspace />
+      <div className="flex items-center justify-between mt-4">
+        <ActionIcon
+          className="transition-opacity opacity-50 hover:opacity-100 cursor-help"
+          variant="transparent"
+          color="gray"
+          onClick={() => drive()}>
+          <MdiCrosshairsQuestion className="text-2xl" />
+        </ActionIcon>
+
+        <RemoveWorkspace />
+      </div>
 
       {/* loader */}
       <LoadingOverlay
