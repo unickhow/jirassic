@@ -1,4 +1,4 @@
-import { Title, Button, Space, LoadingOverlay } from '@mantine/core'
+import { Title, Button, Space, LoadingOverlay, ActionIcon } from '@mantine/core'
 import { showNotification } from '@mantine/notifications'
 import { IconEggCracked, IconEgg } from '@tabler/icons-react'
 import GitHubPanel from '../components/gitHubPanel'
@@ -15,29 +15,28 @@ import { ReactComponent as Loader } from '../assets/loading-dna.svg'
 import WorkspaceBadge from '../components/workspaceBadge'
 import { useStore } from '../store'
 import CONSTANTS from '../utils/constants'
+import drive from '../utils/driver'
+import MdiCrosshairsQuestion from '~icons/mdi/crosshairsQuestion'
 
 function App() {
   // setting modal data
   const [settingOpened, setSettingOpened] = useState<boolean>(false)
-  const store = useStore() as any
+  const currentWorkspace = useStore((state: any) => state.currentWorkspace)
 
   // statistics modal data
   const [statisticsOpened, setStatisticsOpened] = useState<boolean>(false)
 
   // github panel data
   const [formState, setFormState] = useState<IFormState>({
-    owner: '',
     repository: '',
     base: '',
     compare: ''
   })
 
   // init owner from current workspace
+  const hasTour = useStore((state: any) => state.hasTour)
   useEffect(() => {
-    setFormState(state => ({
-      ...state,
-      owner: store.currentWorkspace.owner
-    }))
+    if (!hasTour) drive()
   }, [])
 
   const [resultState, setResultState] = useState<IResultState>({
@@ -48,10 +47,10 @@ function App() {
   const [isParentDisplay, setIsParentDisplay] = useState<boolean>(false)
 
   const fetchPullRequestCommits = async () => {
-    const { owner, repository, base, compare } = formState
-    return fetch(`https://api.github.com/repos/${owner}/${repository}/compare/${base}...${compare}`, {
+    const { repository, base, compare } = formState
+    return fetch(`https://api.github.com/repos/${currentWorkspace.owner}/${repository}/compare/${base}...${compare}`, {
       method: 'GET',
-      headers: { Authorization: `Bearer ${store.currentWorkspace.githubToken}` }
+      headers: { Authorization: `Bearer ${currentWorkspace.githubToken}` }
     }).then((res: any) => {
       if (!res.ok) {
         return Promise.reject(new Error(res.data?.message || 'GitHub compare failed'))
@@ -71,7 +70,7 @@ function App() {
   const [matchedResults, setMatchedResults] = useState<IMatchedResult[]>([])
   const fetchJiraIssuesByCommits = async (commits: IGitHubCommit[]) => {
     setMatchedResults([])
-    const { jiraDomain, jiraAccount, jiraToken } = store.currentWorkspace
+    const { jiraDomain, jiraAccount, jiraToken } = currentWorkspace
     const commitMessages: string[] = commits?.map((commit) => commit.commit.message) ?? []
     const jiraIssueKeys: string[] = [...new Set(commitMessages
       ?.filter((message) => message.match(JiraIssuePatternInCommit))
@@ -120,15 +119,10 @@ function App() {
   //
 
   const isGenerateAvailable = useMemo(() => {
-    const { owner, repository, base, compare } = formState
-    return owner && repository && base && compare
+    const { repository, base, compare } = formState
+    return repository && base && compare
   }, [formState])
   const handleGenerate = async () => {
-    store.setWorkspace({
-      ...store.currentWorkspace,
-      owner: formState.owner
-    })
-
     setResultState((state) => ({
       title: '',
       content: '',
@@ -168,23 +162,13 @@ function App() {
     setResultState((state) => ({ ...state, content: result }))
   }, [isParentDisplay])
 
-  const handleReset = ({ includeOwner = true } = {}) => {
+  const handleReset = () => {
     // reset github panel
-    if (includeOwner) {
-      setFormState({
-        owner: '',
-        repository: '',
-        base: '',
-        compare: ''
-      })
-    } else {
-      setFormState(state => ({
-        owner: state.owner,
-        repository: '',
-        base: '',
-        compare: ''
-      }))
-    }
+    setFormState(state => ({
+      repository: '',
+      base: '',
+      compare: ''
+    }))
     // reset result panel
     setResultState({
       title: '',
@@ -202,7 +186,7 @@ function App() {
           order={1}
           className="jirassic-gradient">Jirassic</Title>
         <div className="flex items-center gap-4">
-          <WorkspaceBadge selectable />
+          <WorkspaceBadge selectable reset={handleReset} />
           <StatisticsModal
             opened={statisticsOpened}
             setOpened={setStatisticsOpened} />
@@ -222,7 +206,7 @@ function App() {
           variant="subtle"
           color="gray"
           leftSection={<IconEgg size={16} />}
-          onClick={() => handleReset({ includeOwner: false })}>Reset</Button>
+          onClick={handleReset}>Reset</Button>
         <Space w="sm" />
         <Button
           variant="gradient"
@@ -238,7 +222,17 @@ function App() {
         isParentDisplay={isParentDisplay}
         setIsParentDisplay={setIsParentDisplay} />
 
-      <RemoveWorkspace />
+      <div className="flex items-center justify-between mt-4">
+        <ActionIcon
+          className="transition-opacity opacity-50 hover:opacity-100 cursor-help"
+          variant="transparent"
+          color="gray"
+          onClick={() => drive()}>
+          <MdiCrosshairsQuestion className="text-2xl" />
+        </ActionIcon>
+
+        <RemoveWorkspace />
+      </div>
 
       {/* loader */}
       <LoadingOverlay

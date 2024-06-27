@@ -53,6 +53,7 @@ const SettingModal = ({ opened, setOpened, reset }: {
   return  (
     <>
       <ActionIcon
+        id="btn_setting_modal"
         variant="transparent"
         color="gray"
         onClick={() => setOpened(true)}>
@@ -60,6 +61,8 @@ const SettingModal = ({ opened, setOpened, reset }: {
       </ActionIcon>
 
       <Modal
+        id="setting_modal"
+        className="relative"
         opened={opened}
         onClose={() => setOpened(false)}
         title={
@@ -72,7 +75,7 @@ const SettingModal = ({ opened, setOpened, reset }: {
           blur: 4
         }}
       >
-        <div className="github-block p-2">
+        <div id="github_block" className="p-2">
           <Divider
             my="xs"
             labelPosition="left"
@@ -85,6 +88,7 @@ const SettingModal = ({ opened, setOpened, reset }: {
           />
           <Input.Wrapper label="Owner" className="w-full">
             <Input
+              id="github_owner"
               autoFocus
               value={settingState.owner}
               onChange={(e) => setSettingState({ ...settingState, owner: e.currentTarget.value })}
@@ -103,6 +107,7 @@ const SettingModal = ({ opened, setOpened, reset }: {
           </Input.Wrapper>
           <Space h="sm" />
           <PasswordInput
+            id="github_token"
             label="Token"
             value={settingState.githubToken}
             onChange={(e) => setSettingState({ ...settingState, githubToken: e.currentTarget.value })}
@@ -115,6 +120,7 @@ const SettingModal = ({ opened, setOpened, reset }: {
           />
           <Space h="sm" />
           <TagsInput
+            id="github_repositories"
             label="Repositories"
             value={settingState.repositories}
             onChange={val => setSettingState({ ...settingState, repositories: val })}
@@ -125,6 +131,7 @@ const SettingModal = ({ opened, setOpened, reset }: {
           />
           <Space h="sm" />
           <TagsInput
+            id="github_branches"
             label="Branches"
             value={settingState.branches}
             onChange={val => setSettingState({ ...settingState, branches: val })}
@@ -134,7 +141,7 @@ const SettingModal = ({ opened, setOpened, reset }: {
             }
           />
         </div>
-        <div className="jira-block p-2">
+        <div id="jira_block" className="p-2 mb-20">
           <Divider
             my="xs"
             labelPosition="left"
@@ -146,6 +153,7 @@ const SettingModal = ({ opened, setOpened, reset }: {
             }
           />
           <TextInput
+            id="jira_domain"
             label="Domain"
             leftSection={
               <MdiSearchWeb />
@@ -165,6 +173,7 @@ const SettingModal = ({ opened, setOpened, reset }: {
           />
           <Space h="sm" />
           <TextInput
+            id="jira_account"
             label="Account"
             leftSection={
               <IconUser size={20} />
@@ -184,6 +193,7 @@ const SettingModal = ({ opened, setOpened, reset }: {
           />
           <Space h="sm" />
           <PasswordInput
+            id="jira_token"
             label="Token"
             value={settingState.jiraToken}
             onChange={(e) => setSettingState({ ...settingState, jiraToken: e.currentTarget.value })}
@@ -194,84 +204,84 @@ const SettingModal = ({ opened, setOpened, reset }: {
               <MdiShieldKey />
             }
           />
-
-          <div className="modal-actions mt-8 flex justify-between">
-            <Button
-              variant="subtle"
-              color="gray"
-              size="xs"
-              leftSection={<IconX size={20} />}
-              onClick={() => setOpened(false)}>
-              Cancel
-            </Button>
-            <Space w="sm" />
-            <Popover
-              position="bottom"
-              withArrow
-              shadow="md"
-              classNames={{
-                dropdown: 'max-w-[300px]'
-              }}
-              opened={isNewWorkspaceNaming}
-              onOpen={() => {
-                setNewWorkspaceName('')
-                setIsNewWorkspaceNaming(true)
-              }}
-              onClose={() => setIsNewWorkspaceNaming(false)} >
-              <Popover.Target>
-                <Button
-                  variant="subtle"
-                  size="xs"
-                  color="#dfa153"
-                  leftSection={<IconCubePlus size={20} />}
-                  onClick={() => setIsNewWorkspaceNaming(true)}>
-                  Save as
-                </Button>
-              </Popover.Target>
-              <Popover.Dropdown>
-                <div>
-                  <ColorPicker
-                    format="hex"
-                    swatches={colors}
-                    withPicker={false}
-                    fullWidth
-                    className="mb-4"
-                    value={workspaceColor}
-                    onChange={setWorkspaceColor} />
-                  <div className="flex items-center gap-2">
-                    <TextInput
-                      placeholder="New workspace name"
-                      value={newWorkspaceName.trim()}
-                      size="xs"
-                      leftSection={
-                        <div className="w-4 h-4 rounded" style={{ background: workspaceColor }} />
-                      }
-                      onChange={(e) => setNewWorkspaceName(e.currentTarget.value)} />
-                    <Button
-                      variant="gradient"
-                      size="xs"
-                      className="flex-shrink-0"
-                      disabled={!newWorkspaceName.trim()}
-                      gradient={{ from: '#ffda33', to: '#ab3e02', deg: 35 }}
-                      leftSection={<IconCheck size={20} />}
-                      onClick={handleWorkspaceCreate}>
-                      Save
-                    </Button>
-                  </div>
+        </div>
+        <div className="modal-actions mt-8 flex justify-between">
+          <Button
+            variant="subtle"
+            color="gray"
+            size="xs"
+            leftSection={<IconX size={20} />}
+            onClick={() => setOpened(false)}>
+            Cancel
+          </Button>
+          <Space w="sm" />
+          <Popover
+            position="bottom"
+            withArrow
+            shadow="md"
+            classNames={{
+              dropdown: 'max-w-[300px]'
+            }}
+            opened={isNewWorkspaceNaming}
+            onOpen={() => {
+              setNewWorkspaceName('')
+              setIsNewWorkspaceNaming(true)
+            }}
+            onClose={() => setIsNewWorkspaceNaming(false)} >
+            <Popover.Target>
+              <Button
+                className="btn-save-as"
+                variant="subtle"
+                size="xs"
+                color="#dfa153"
+                leftSection={<IconCubePlus size={20} />}
+                onClick={() => setIsNewWorkspaceNaming(true)}>
+                Save as
+              </Button>
+            </Popover.Target>
+            <Popover.Dropdown>
+              <div>
+                <ColorPicker
+                  format="hex"
+                  swatches={colors}
+                  withPicker={false}
+                  fullWidth
+                  className="mb-4"
+                  value={workspaceColor}
+                  onChange={setWorkspaceColor} />
+                <div className="flex items-center gap-2">
+                  <TextInput
+                    placeholder="New workspace name"
+                    value={newWorkspaceName.trim()}
+                    size="xs"
+                    leftSection={
+                      <div className="w-4 h-4 rounded" style={{ background: workspaceColor }} />
+                    }
+                    onChange={(e) => setNewWorkspaceName(e.currentTarget.value)} />
+                  <Button
+                    variant="gradient"
+                    size="xs"
+                    className="flex-shrink-0"
+                    disabled={!newWorkspaceName.trim()}
+                    gradient={{ from: '#ffda33', to: '#ab3e02', deg: 35 }}
+                    leftSection={<IconCheck size={20} />}
+                    onClick={handleWorkspaceCreate}>
+                    Save
+                  </Button>
                 </div>
-              </Popover.Dropdown>
-            </Popover>
-            <Space w="sm" />
-            <Button
-              variant="gradient"
-              size="xs"
-              disabled={isNewWorkspaceNaming}
-              gradient={{ from: '#ffda33', to: '#ab3e02', deg: 35 }}
-              leftSection={<IconCheck size={20} />}
-              onClick={handleSave}>
-              Save
-            </Button>
-          </div>
+              </div>
+            </Popover.Dropdown>
+          </Popover>
+          <Space w="sm" />
+          <Button
+            variant="gradient"
+            size="xs"
+            disabled={isNewWorkspaceNaming}
+            gradient={{ from: '#ffda33', to: '#ab3e02', deg: 35 }}
+            leftSection={<IconCheck size={20} />}
+            onClick={handleSave}>
+            Save
+          </Button>
         </div>
       </Modal>
     </>

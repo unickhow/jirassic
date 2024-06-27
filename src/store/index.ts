@@ -19,6 +19,11 @@ const defaultWorkspace: IWorkspace = {
 export const useStore = create(
   persist(
     (set, get) => ({
+      hasTour: false,
+      setHasTour: (hasTour: boolean) => {
+        set({ hasTour })
+      },
+
       workspaces: [defaultWorkspace as IWorkspace],
       setWorkspace: (workspace: IWorkspace) => {
         const workspaces = (get() as any).workspaces

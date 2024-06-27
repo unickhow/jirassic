@@ -6,6 +6,7 @@ import MdiFileTree from '~icons/mdi/fileTree'
 import MaterialSymbolsOpenInNewRounded from '~icons/material-symbols/open-in-new-rounded'
 import CONSTANTS from '../utils/constants'
 import { open as OpenLink } from '@tauri-apps/api/shell'
+import { useStore } from '../store'
 
 const ResultPanel = ({ formState, resultState, isParentDisplay, setIsParentDisplay }: {
   formState: IFormState,
@@ -13,6 +14,7 @@ const ResultPanel = ({ formState, resultState, isParentDisplay, setIsParentDispl
   isParentDisplay: boolean,
   setIsParentDisplay: (isParentDisplay: boolean) => void
 }) => {
+  const currentWorkspace = useStore((state: any) => state.currentWorkspace)
   return (
     <>
       <Paper shadow="sm" p="md">
@@ -42,7 +44,7 @@ const ResultPanel = ({ formState, resultState, isParentDisplay, setIsParentDispl
               variant="light"
               size="lg"
               color="#dfa153"
-              onClick={() => OpenLink(`https://github.com/${formState.owner}/${formState.repository}/compare/${formState.base}...${formState.compare}`)}>
+              onClick={() => OpenLink(`https://github.com/${currentWorkspace.owner}/${formState.repository}/compare/${formState.base}...${formState.compare}`)}>
               <MaterialSymbolsOpenInNewRounded />
             </ActionIcon>
           }
@@ -55,9 +57,13 @@ const ResultPanel = ({ formState, resultState, isParentDisplay, setIsParentDispl
           checked={isParentDisplay}
           onChange={(e) => setIsParentDisplay(e.currentTarget.checked)} />
         <div className="mt-2 border border-gray-300 rounded text-sm flex p-1">
-          <div
-            className="mr-auto markdown-preview min-h-[1.875rem]"
-            dangerouslySetInnerHTML={{ __html: markedPreview(resultState.content ?? '') }} />
+          {
+            resultState.content
+              ? <div
+                  className="mr-auto markdown-preview min-h-[1.875rem]"
+                  dangerouslySetInnerHTML={{ __html: markedPreview(resultState.content ?? '') }} />
+              : <span className="text-gray-400 p-2 italic">All good! No unmerged pull requests found.</span>
+          }
           <CopyButton value={resultState.content} timeout={1000}>
             {({ copied, copy }) => (
               resultState.content &&
