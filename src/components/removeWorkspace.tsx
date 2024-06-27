@@ -28,6 +28,7 @@ const RemoveWorkspace = () => {
               <ActionIcon
                 className="transition-opacity opacity-50 hover:opacity-100"
                 variant="transparent"
+                size="sm"
                 color="red">
                 <MdiArchiveRemoveOutline className="text-2xl" />
               </ActionIcon>

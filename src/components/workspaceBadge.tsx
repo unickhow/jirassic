@@ -3,8 +3,9 @@ import { useStore } from '../store'
 import { useState } from 'react'
 import { useClickOutside } from '@mantine/hooks'
 
-const WorkspaceBadge = ({ selectable = false }: {
+const WorkspaceBadge = ({ selectable = false, reset = function() {} }: {
   selectable?: boolean
+  reset?: () => void
 }) => {
   const currentWorkspace = useStore((state: any) => state.currentWorkspace || {})
   const workspaces = useStore((state: any) => state.workspaces || [])
@@ -42,7 +43,10 @@ const WorkspaceBadge = ({ selectable = false }: {
               className="flex items-center gap-2 rounded-sm overflow-hidden hover:bg-gray-100 py-1 px-2 cursor-pointer"
               key={workspace.name}
               onClick={() => {
-                setCurrentWorkspace(workspace)
+                if (workspace.name !== currentWorkspace.name) {
+                  setCurrentWorkspace(workspace)
+                  reset()
+                }
                 setIsOpened(false)
               }}>
               <div

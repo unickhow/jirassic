@@ -22,14 +22,12 @@ function App() {
   // setting modal data
   const [settingOpened, setSettingOpened] = useState<boolean>(false)
   const currentWorkspace = useStore((state: any) => state.currentWorkspace)
-  const setWorkspace = useStore((state: any) => state.setWorkspace)
 
   // statistics modal data
   const [statisticsOpened, setStatisticsOpened] = useState<boolean>(false)
 
   // github panel data
   const [formState, setFormState] = useState<IFormState>({
-    owner: '',
     repository: '',
     base: '',
     compare: ''
@@ -38,11 +36,6 @@ function App() {
   // init owner from current workspace
   const hasTour = useStore((state: any) => state.hasTour)
   useEffect(() => {
-    setFormState(state => ({
-      ...state,
-      owner: currentWorkspace.owner
-    }))
-
     if (!hasTour) drive()
   }, [])
 
@@ -54,8 +47,8 @@ function App() {
   const [isParentDisplay, setIsParentDisplay] = useState<boolean>(false)
 
   const fetchPullRequestCommits = async () => {
-    const { owner, repository, base, compare } = formState
-    return fetch(`https://api.github.com/repos/${owner}/${repository}/compare/${base}...${compare}`, {
+    const { repository, base, compare } = formState
+    return fetch(`https://api.github.com/repos/${currentWorkspace.owner}/${repository}/compare/${base}...${compare}`, {
       method: 'GET',
       headers: { Authorization: `Bearer ${currentWorkspace.githubToken}` }
     }).then((res: any) => {
@@ -126,15 +119,10 @@ function App() {
   //
 
   const isGenerateAvailable = useMemo(() => {
-    const { owner, repository, base, compare } = formState
-    return owner && repository && base && compare
+    const { repository, base, compare } = formState
+    return repository && base && compare
   }, [formState])
   const handleGenerate = async () => {
-    setWorkspace({
-      ...currentWorkspace,
-      owner: formState.owner
-    })
-
     setResultState((state) => ({
       title: '',
       content: '',
@@ -174,23 +162,13 @@ function App() {
     setResultState((state) => ({ ...state, content: result }))
   }, [isParentDisplay])
 
-  const handleReset = ({ includeOwner = true } = {}) => {
+  const handleReset = () => {
     // reset github panel
-    if (includeOwner) {
-      setFormState({
-        owner: '',
-        repository: '',
-        base: '',
-        compare: ''
-      })
-    } else {
-      setFormState(state => ({
-        owner: state.owner,
-        repository: '',
-        base: '',
-        compare: ''
-      }))
-    }
+    setFormState(state => ({
+      repository: '',
+      base: '',
+      compare: ''
+    }))
     // reset result panel
     setResultState({
       title: '',
@@ -208,7 +186,7 @@ function App() {
           order={1}
           className="jirassic-gradient">Jirassic</Title>
         <div className="flex items-center gap-4">
-          <WorkspaceBadge selectable />
+          <WorkspaceBadge selectable reset={handleReset} />
           <StatisticsModal
             opened={statisticsOpened}
             setOpened={setStatisticsOpened} />
@@ -228,7 +206,7 @@ function App() {
           variant="subtle"
           color="gray"
           leftSection={<IconEgg size={16} />}
-          onClick={() => handleReset({ includeOwner: false })}>Reset</Button>
+          onClick={handleReset}>Reset</Button>
         <Space w="sm" />
         <Button
           variant="gradient"

@@ -12,7 +12,6 @@ export interface IWorkspace {
 }
 
 export interface IFormState {
-  owner: string
   repository: string
   base: string
   compare: string
