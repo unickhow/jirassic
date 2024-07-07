@@ -8,11 +8,13 @@ const RemoveWorkspace = () => {
   const workspaces = useStore((state: any) => state.workspaces || [])
   const currentWorkspace = useStore((state: any) => state.currentWorkspace || {})
   const [inputValue, setInputValue] = useState<string>('')
+  const [opened, setOpened] = useState<boolean>(false)
   const canDelete = useMemo(() => inputValue === currentWorkspace.name, [inputValue, currentWorkspace.name])
   const removeWorkspace = useStore((state: any) => state.removeWorkspace)
   const handleRemoveWorkspace = () => {
     if (!canDelete) return
     removeWorkspace(currentWorkspace)
+    setOpened(false)
   }
   return (
     workspaces?.length > 1
@@ -21,6 +23,8 @@ const RemoveWorkspace = () => {
             width={300}
             position="top-end"
             withArrow
+            opened={opened}
+            onClose={() => setOpened(false)}
             onOpen={() => setInputValue('')}
             arrowOffset={20}
             shadow="md">
@@ -29,7 +33,8 @@ const RemoveWorkspace = () => {
                 className="transition-opacity opacity-50 hover:opacity-100"
                 variant="transparent"
                 size="sm"
-                color="red">
+                color="red"
+                onClick={() => setOpened(val => !val)}>
                 <MdiArchiveRemoveOutline className="text-2xl" />
               </ActionIcon>
             </Popover.Target>
@@ -48,7 +53,7 @@ const RemoveWorkspace = () => {
                   disabled={!canDelete}
                   className="flex-shrink-0"
                   leftSection={<MdiCheckAll />}
-                  onClick={handleRemoveWorkspace}
+                  onClick={() => handleRemoveWorkspace()}
                   color="red">
                   Remove
                 </Button>

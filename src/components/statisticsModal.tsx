@@ -84,7 +84,6 @@ const StatisticsModal = ({ opened, setOpened }: {
           id="btn_statistics_modal"
           variant="transparent"
           color="gray"
-          disabled={!canFetchStatistics}
           onClick={() => setOpened(true)}>
           <MdiHumanMaleBoardPoll className="text-lg" />
         </ActionIcon>
@@ -117,13 +116,16 @@ const StatisticsModal = ({ opened, setOpened }: {
               variant="transparent"
               color="gray"
               size="xs"
+              disabled={!canFetchStatistics}
               onClick={() => fetchStatistics()}>
               <IconReload size={20} />
             </ActionIcon>
           </div>
         {
           Object.entries(currentStatistics?.repos || []).length === 0
-            ? <p className="text-center text-sm text-gray-500 mt-4">No unmerged pull requests</p>
+            ? <p className="text-center text-sm text-gray-500 mt-4">
+                { canFetchStatistics ? 'No unmerged pull requests' : 'GitHub setting is incomplete.' }
+              </p>
             : Object.entries(currentStatistics?.repos || []).map(([repo, prs]: [string, any]) => (
               <div key={repo} className="p-2">
                 <h3 className="flex items-center gap-2 mb-2">
@@ -145,7 +147,7 @@ const StatisticsModal = ({ opened, setOpened }: {
                 </h3>
                 <div className="">
                   <div className="flex items-center gap-2">
-                    <ul className="pl-4 ml-0 flex flex-col gap-4">
+                    <ul className="pl-4 ml-0 flex flex-col gap-4 w-full">
                       {
                         prs.map((pr: IUnmergedPullRequest) => (
                           <li key={pr.url} className="flex flex-col gap-2">
@@ -155,7 +157,7 @@ const StatisticsModal = ({ opened, setOpened }: {
                                 onClick={() => OpenLink(pr.url)}>
                                 {pr.title}
                               </a>
-                              <span className=" text-gray-500">{pr.author}</span>
+                              <span className="text-gray-500">{pr.author}</span>
                             </div>
                             <div className="text-xs text-gray-500 flex flex-wrap items-center">
                               <span>{trimText(pr.base.ref)} ← {trimText(pr.head.ref)}</span>

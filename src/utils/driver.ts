@@ -24,7 +24,13 @@ function drive () {
               <p>Let's start with setting up your workspace.</p>
             </div>
           `,
-        }
+          onPrevClick: () => {
+            if (!hasTour) return
+          },
+          showButtons: hasTour
+            ? ['next', 'previous', 'close']
+            : ['next']
+        },
       },
       {
         element: '#btn_setting_modal',
