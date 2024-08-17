@@ -17,6 +17,7 @@ import { useStore } from '../store'
 import CONSTANTS from '../utils/constants'
 import drive from '../utils/driver'
 import MdiCrosshairsQuestion from '~icons/mdi/crosshairsQuestion'
+import { version } from '../../package.json'
 
 function App() {
   // setting modal data
@@ -182,9 +183,12 @@ function App() {
   return (
     <main className="container max-w-[760px] mx-auto">
       <div className="flex items-center justify-between mb-4">
-        <Title
-          order={1}
-          className="jirassic-gradient">Jirassic</Title>
+        <div className="flex items-end gap-2">
+          <Title
+            order={1}
+            className="jirassic-gradient">Jirassic</Title>
+          <small className="leading-[1.875rem] text-gray-300 italic font-bold">v{version}</small>
+        </div>
         <div className="flex items-center gap-4">
           <WorkspaceBadge selectable reset={handleReset} />
           <StatisticsModal
