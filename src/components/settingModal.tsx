@@ -217,7 +217,6 @@ const SettingModal = ({ opened, setOpened, reset }: {
           <Space w="sm" />
           <Popover
             position="bottom"
-            withArrow
             shadow="md"
             classNames={{
               dropdown: 'max-w-[300px]'
@@ -233,7 +232,7 @@ const SettingModal = ({ opened, setOpened, reset }: {
                 className="btn-save-as"
                 variant="subtle"
                 size="xs"
-                color="#dfa153"
+                color="#FF9946"
                 leftSection={<IconCubePlus size={20} />}
                 onClick={() => setIsNewWorkspaceNaming(true)}>
                 Save as
@@ -259,11 +258,11 @@ const SettingModal = ({ opened, setOpened, reset }: {
                     }
                     onChange={(e) => setNewWorkspaceName(e.currentTarget.value)} />
                   <Button
-                    variant="gradient"
+                    variant="filled"
+                    color="#FF9946"
                     size="xs"
                     className="flex-shrink-0"
                     disabled={!newWorkspaceName.trim()}
-                    gradient={{ from: '#ffda33', to: '#ab3e02', deg: 35 }}
                     leftSection={<IconCheck size={20} />}
                     onClick={handleWorkspaceCreate}>
                     Save
@@ -274,10 +273,10 @@ const SettingModal = ({ opened, setOpened, reset }: {
           </Popover>
           <Space w="sm" />
           <Button
-            variant="gradient"
+            variant="filled"
+            color="#FF9946"
             size="xs"
             disabled={isNewWorkspaceNaming}
-            gradient={{ from: '#ffda33', to: '#ab3e02', deg: 35 }}
             leftSection={<IconCheck size={20} />}
             onClick={handleSave}>
             Save

@@ -6,10 +6,14 @@ function drive () {
   const hasTour = (useStore.getState() as any).hasTour
   const setHasTour = (useStore.getState() as any).setHasTour
   const driverObj = driver({
+    popoverClass: 'jirassic-tour',
     showProgress: hasTour,
     showButtons: ['next', 'previous', 'close'],
     allowClose: hasTour,
     disableActiveInteraction: true,
+    onPopoverRender: (popover, { config }) => {
+      popover.arrow.style.display = 'none'
+    },
     steps: [
       {
         popover: {
@@ -28,7 +32,7 @@ function drive () {
             if (!hasTour) return
           },
           showButtons: hasTour
-            ? ['next', 'previous', 'close']
+            ? ['next', 'close']
             : ['next']
         },
       },
@@ -75,6 +79,9 @@ function drive () {
             setTimeout(() => {
               driverObj.moveNext()
             }, 100)
+          },
+          onPopoverRender: (popover, { config }) => {
+            popover.arrow.style.display = 'none'
           }
         },
       },
