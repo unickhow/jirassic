@@ -22,7 +22,6 @@ const RemoveWorkspace = () => {
           <Popover
             width={300}
             position="top-end"
-            withArrow
             opened={opened}
             onClose={() => setOpened(false)}
             onOpen={() => setInputValue('')}

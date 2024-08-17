@@ -1,4 +1,4 @@
-import { Paper, Input, CopyButton, ActionIcon, Checkbox } from '@mantine/core'
+import { Paper, Input, CopyButton, ActionIcon, Checkbox, Tooltip } from '@mantine/core'
 import { IconCopy, IconCheck } from '@tabler/icons-react'
 import { IResultState, IFormState } from '../declare/interface'
 import { markedPreview } from '../utils/marked'
@@ -40,13 +40,15 @@ const ResultPanel = ({ formState, resultState, isParentDisplay, setIsParentDispl
             }/>
           {
             resultState.title &&
-            <ActionIcon
-              variant="light"
-              size="lg"
-              color="#dfa153"
-              onClick={() => OpenLink(`https://github.com/${currentWorkspace.owner}/${formState.repository}/compare/${formState.base}...${formState.compare}`)}>
-              <MaterialSymbolsOpenInNewRounded />
-            </ActionIcon>
+            <Tooltip label="Open in GitHub" color="#FF9946" openDelay={500}>
+              <ActionIcon
+                variant="light"
+                size="lg"
+                color="#dfa153"
+                onClick={() => OpenLink(`https://github.com/${currentWorkspace.owner}/${formState.repository}/compare/${formState.base}...${formState.compare}`)}>
+                <MaterialSymbolsOpenInNewRounded />
+              </ActionIcon>
+            </Tooltip>
           }
         </div>
         <Checkbox
@@ -56,7 +58,7 @@ const ResultPanel = ({ formState, resultState, isParentDisplay, setIsParentDispl
           color={CONSTANTS.COLORS.PRIMARY_DARK}
           checked={isParentDisplay}
           onChange={(e) => setIsParentDisplay(e.currentTarget.checked)} />
-        <div className="mt-2 border border-gray-300 rounded text-sm flex p-1">
+        <div className="mt-2 border border-gray-300 rounded text-sm flex p-1 bg-white">
           {
             resultState.content
               ? <div

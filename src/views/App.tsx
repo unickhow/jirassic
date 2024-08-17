@@ -1,4 +1,4 @@
-import { Title, Button, Space, LoadingOverlay, ActionIcon } from '@mantine/core'
+import { Title, Button, Space, LoadingOverlay, ActionIcon, Tooltip } from '@mantine/core'
 import { showNotification } from '@mantine/notifications'
 import { IconEggCracked, IconEgg } from '@tabler/icons-react'
 import GitHubPanel from '../components/gitHubPanel'
@@ -75,7 +75,7 @@ function App() {
     const jiraIssueKeys: string[] = [...new Set(commitMessages
       ?.filter((message) => message.match(JiraIssuePatternInCommit))
       ?.map((message) => message.match(JiraIssuePattern)?.[0] || '')
-      ?.filter(Boolean))] ?? []
+      ?.filter(Boolean))]
 
     return Promise.all(jiraIssueKeys.map((issueKey) => {
       const token = `${jiraAccount}:${jiraToken}`
@@ -120,7 +120,7 @@ function App() {
 
   const isGenerateAvailable = useMemo(() => {
     const { repository, base, compare } = formState
-    return repository && base && compare
+    return !!repository && !!base && !!compare
   }, [formState])
   const handleGenerate = async () => {
     setResultState((state) => ({
@@ -208,12 +208,18 @@ function App() {
           leftSection={<IconEgg size={16} />}
           onClick={handleReset}>Reset</Button>
         <Space w="sm" />
-        <Button
-          variant="gradient"
-          gradient={{ from: '#ffda33', to: '#ab3e02', deg: 35 }}
-          leftSection={<IconEggCracked size={16} />}
-          disabled={!isGenerateAvailable}
-          onClick={handleGenerate}>Generate</Button>
+        <Tooltip
+          label="Repository, base and compare branch are required"
+          color="#FF9946"
+          disabled={isGenerateAvailable}
+          openDelay={500}>
+          <Button
+            variant="gradient"
+            gradient={{ from: '#ffda33', to: '#ab3e02', deg: 35 }}
+            leftSection={<IconEggCracked size={16} />}
+            disabled={!isGenerateAvailable}
+            onClick={handleGenerate}>Generate</Button>
+        </Tooltip>
       </div>
 
       <ResultPanel

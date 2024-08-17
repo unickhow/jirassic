@@ -24,7 +24,6 @@ const WorkspaceBadge = ({ selectable = false, reset = function() {} }: {
       classNames={{
         dropdown: 'p-2'
       }}
-      withArrow
       arrowOffset={20}>
       <Popover.Target>
         <div
@@ -40,7 +39,7 @@ const WorkspaceBadge = ({ selectable = false, reset = function() {} }: {
             .filter((workspace: any) => workspace.name !== currentWorkspace.name)
             .map((workspace: any) => (
             <li
-              className="flex items-center gap-2 rounded-sm overflow-hidden hover:bg-gray-100 py-1 px-2 cursor-pointer"
+              className="flex items-center gap-2 rounded-[0.5rem] overflow-hidden hover:bg-gray-100 py-1 px-2 cursor-pointer"
               key={workspace.name}
               onClick={() => {
                 if (workspace.name !== currentWorkspace.name) {
