@@ -54,7 +54,7 @@ const SettingModal = ({ opened, setOpened, reset }: {
     <>
       <ActionIcon
         id="btn_setting_modal"
-        variant="transparent"
+        variant="subtle"
         color="gray"
         onClick={() => setOpened(true)}>
         <IconSettings size={20} />

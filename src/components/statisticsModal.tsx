@@ -82,7 +82,7 @@ const StatisticsModal = ({ opened, setOpened }: {
       <Tooltip label="GitHub setting is incomplete." disabled={canFetchStatistics}>
         <ActionIcon
           id="btn_statistics_modal"
-          variant="transparent"
+          variant="subtle"
           color="gray"
           onClick={() => setOpened(true)}>
           <MdiHumanMaleBoardPoll className="text-lg" />
