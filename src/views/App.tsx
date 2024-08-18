@@ -208,7 +208,7 @@ function App() {
       <div className="flex justify-center my-8">
         <Button
           variant="subtle"
-          color="gray"
+          color="jirassic"
           leftSection={<IconEgg size={16} />}
           onClick={handleReset}>Reset</Button>
         <Space w="sm" />
