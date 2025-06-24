@@ -78,7 +78,7 @@ function App() {
       ?.map((message) => message.match(JiraIssuePattern)?.[0] || '')
       ?.filter(Boolean))]
 
-    return Promise.all(jiraIssueKeys.map((issueKey) => {
+    const promises = jiraIssueKeys.map((issueKey) => {
       const token = `${jiraAccount}:${jiraToken}`
       const domain = /^https:\/\//.test(jiraDomain) ? jiraDomain : `https://${jiraDomain}`
       const url = domain.endsWith('/') ? domain : `${domain}/`
@@ -113,9 +113,19 @@ function App() {
           color: 'red',
           autoClose: CONSTANTS.NOTIFICATION_DURATION
         })
-        throw new Error(err)
+        return Promise.reject(err)
       })
-    }))
+    })
+
+    // Use Promise.allSettled to continue processing even when some requests fail
+    const results = await Promise.allSettled(promises)
+
+    // Filter out failed results and return only successful ones
+    const successfulResults = results
+      .filter((result): result is PromiseFulfilledResult<IMatchedResult> => result.status === 'fulfilled')
+      .map(result => result.value)
+
+    return successfulResults
   }
   //
 
